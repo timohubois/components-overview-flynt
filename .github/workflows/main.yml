@@ -1,0 +1,21 @@
+name: Commit Checks
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+    - name: Install composer
+      run: |
+        php8.1 $(which composer) install
+    - name: Run lint
+      run: |
+        composer php:lint

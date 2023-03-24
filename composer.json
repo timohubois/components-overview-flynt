@@ -1,0 +1,40 @@
+{
+    "name": "timohubois/flynt-components-overview",
+    "description": "Get an overview of where the components of the Flynt theme are being used.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Timo Hubois",
+            "email": "t.hubois@pixelsaft.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "process-timeout": 2000,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "wp-cli/wp-cli-bundle": "^2.7",
+        "wp-coding-standards/wpcs": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "FlyntComponentsOverview\\": "classes/"
+        }
+    },
+    "scripts": {
+        "php:lint": "vendor/bin/phpcs --standard=phpcs.xml .",
+        "php:lint:fix": "vendor/bin/phpcbf --standard=phpcs.xml ."
+    }
+}
