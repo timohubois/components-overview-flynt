@@ -19,6 +19,11 @@ class PostsWithComponents
             return (object) [];
         }
 
+        if (is_multisite()) {
+            $current_blog_id = get_current_blog_id();
+            switch_to_blog($current_blog_id);
+        }
+
         global $wpdb;
 
         $postTypeClause = '';
@@ -41,14 +46,14 @@ class PostsWithComponents
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $wpdb->prepare() is used above
         $sql = $wpdb->prepare(
             "SELECT {$wpdb->posts}.ID, {$wpdb->posts}.post_type
-                FROM {$wpdb->posts} wp_posts
-                LEFT JOIN {$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = wp_posts.ID
-                WHERE wp_posts.post_status = 'publish'
+                FROM {$wpdb->posts}
+                LEFT JOIN {$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
+                WHERE {$wpdb->posts}.post_status = 'publish'
                 AND {$wpdb->postmeta}.meta_value LIKE %s
-                AND wp_postmeta.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
+                AND {$wpdb->postmeta}.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
                 {$postTypeClause}
                 {$searchClause}
-                GROUP BY wp_posts.ID
+                GROUP BY {$wpdb->posts}.ID
                 ORDER BY {$orderby} {$order}
                 LIMIT %d, %d",
             '%' . $wpdb->esc_like($componentName) . '%',
@@ -67,6 +72,10 @@ class PostsWithComponents
             return $value;
         }, $results);
 
+        if (is_multisite()) {
+            restore_current_blog();
+        }
+
         return (object) [
             'items' => $results,
             'totalItems' => self::getCount($componentName, $postType)
@@ -77,6 +86,11 @@ class PostsWithComponents
     {
         if (!$componentName) {
             return 0;
+        }
+
+        if (is_multisite()) {
+            $current_blog_id = get_current_blog_id();
+            switch_to_blog($current_blog_id);
         }
 
         global $wpdb;
@@ -92,24 +106,33 @@ class PostsWithComponents
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $wpdb->prepare() is used above
         $sql = $wpdb->prepare(
             "SELECT COUNT(DISTINCT {$wpdb->posts}.ID)
-                FROM {$wpdb->posts} wp_posts
+                FROM {$wpdb->posts}
                 LEFT JOIN {$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
                 WHERE {$wpdb->posts}.post_status = 'publish'
                 AND {$wpdb->postmeta}.meta_value LIKE %s
-                AND wp_postmeta.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
+                AND {$wpdb->postmeta}.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
                 {$postTypeClause}",
             '%' . $wpdb->esc_like($componentName) . '%'
         );
         // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $wpdb->prepare()
 
+        if (is_multisite()) {
+            restore_current_blog();
+        }
+
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- It’s prepared above
-        return $wpdb->get_var($sql);
+        return $wpdb->get_var($sql) ?? 0;
     }
 
     public static function getPostTypes(string|bool $componentName = false): object
     {
         if (!$componentName) {
             return (object) [];
+        }
+
+        if (is_multisite()) {
+            $current_blog_id = get_current_blog_id();
+            switch_to_blog($current_blog_id);
         }
 
         global $wpdb;
@@ -120,7 +143,7 @@ class PostsWithComponents
                 LEFT JOIN {$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
                 WHERE {$wpdb->posts}.post_status = 'publish'
                 AND {$wpdb->postmeta}.meta_value LIKE %s
-                AND wp_postmeta.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
+                AND {$wpdb->postmeta}.meta_value REGEXP '^[a]:.*[;}]\$' -- Check if meta_value is serialized
                 ",
             '%' . $wpdb->esc_like($componentName) . '%',
         );
@@ -136,6 +159,9 @@ class PostsWithComponents
             ];
         }, $results);
 
+        if (is_multisite()) {
+            restore_current_blog();
+        }
 
         return (object) $postTypes;
     }
