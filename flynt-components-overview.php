@@ -15,11 +15,15 @@
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  */
 
- namespace FlyntComponentsOverview;
+namespace FlyntComponentsOverview;
 
- defined('ABSPATH') || exit;
+defined('ABSPATH') || exit;
 
-if (! defined('FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE')) {
+if (!is_admin()) {
+    return;
+}
+
+if (!defined('FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE')) {
     define('FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE', __FILE__);
 }
 
