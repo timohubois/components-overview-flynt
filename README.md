@@ -4,7 +4,7 @@ Flynt Components Overview is a plugin to get an overview of where components of 
 
 ## Requirements
 
-- PHP 7.4
+- PHP >= 8.0
 
 ## Installation
 

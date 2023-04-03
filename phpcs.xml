@@ -39,7 +39,7 @@
     <arg name="extensions" value="php"/>
 
     <!-- Check for PHP cross-version compatibility. -->
-    <config name="testVersion" value="7.4-"/>
+    <config name="testVersion" value="8.0-"/>
     <rule ref="PHPCompatibilityWP"/>
 
     <!-- Check for WordPress cross-version compatibility. -->

@@ -6,7 +6,7 @@
  * Description:       Get an overview of where components of the Flynt theme are currently used in flexible content acf fields.
  * Version:           1.0.0
  * Requires at least: 5.0
- * Requires PHP:      7.4
+ * Requires PHP:      8.0
  * Author:            Timo Hubois
  * Author URI:        https://pixelsaft.de
  * Text Domain:       flynt-components-overview
