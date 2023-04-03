@@ -13,8 +13,6 @@ if (!class_exists('WP_List_Table')) {
 
 class ListTableComponents extends WP_List_Table
 {
-    protected $components;
-
     public function __construct()
     {
         parent::__construct([
@@ -22,24 +20,6 @@ class ListTableComponents extends WP_List_Table
             'plural'    => __('Flynt Components Overview', 'flynt-components-overview'),
             'ajax'      => false
         ]);
-
-        $this->components = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS);
-        if (false === $this->components || count(get_object_vars($this->components)) === 0) {
-            $this->components = (object) [];
-            $componentManager = ComponentManager::getInstance();
-            $allComponents = $componentManager->getAll();
-            foreach ($allComponents as $key => $component) {
-                $componentObject = PostsWithComponents::get($key, false, 1);
-                if ($componentObject->totalItems > 0) {
-                    $this->components->{$key} = [
-                        'name' => $key,
-                        'postTypes' => PostsWithComponents::getPostTypes($key),
-                        'totalItems' => $componentObject->totalItems
-                    ];
-                }
-            }
-            set_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS, $this->components, YEAR_IN_SECONDS);
-        }
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
@@ -48,7 +28,7 @@ class ListTableComponents extends WP_List_Table
         $currentView = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'all';
         $views = [];
 
-        $components = $this->components;
+        $components = Components::getInstance()->getAll();
 
         $componentsCount = count(get_object_vars($components));
         $views['all'] = sprintf(
@@ -184,7 +164,7 @@ class ListTableComponents extends WP_List_Table
         $hidden = [];
         $sortable = $this->get_sortable_columns();
 
-        $data = get_object_vars($this->components);
+        $data = get_object_vars(Components::getInstance()->getAll());
         $totalItems = count($data);
 
         $postType = !empty($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : false;

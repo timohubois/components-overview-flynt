@@ -2,7 +2,6 @@
 
 namespace FlyntComponentsOverview;
 
-use Flynt\ComponentManager;
 use FlyntComponentsOverview\AdminMenu;
 
 defined('ABSPATH') || exit;
