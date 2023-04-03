@@ -27,7 +27,7 @@ class Components
         return (object) $this->components;
     }
 
-    private function addComponents(): void
+    public function addComponents(): void
     {
         $this->components = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS);
 

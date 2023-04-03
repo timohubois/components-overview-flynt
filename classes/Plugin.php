@@ -41,6 +41,11 @@ class Plugin
         delete_transient(self::TRANSIENT_KEY_COMPONENTS_POST_TYPES);
     }
 
+    public static function createTransients(): void
+    {
+        Components::getInstance()->addComponents();
+    }
+
     public static function getPluginRootDir(): string
     {
         return plugin_dir_path(FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE);

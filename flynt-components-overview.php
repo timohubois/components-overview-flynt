@@ -38,3 +38,7 @@ add_action('after_setup_theme', function (): void {
 register_deactivation_hook(__FILE__, function (): void {
     Plugin::deleteTransients();
 });
+
+register_activation_hook(__FILE__, function (): void {
+    Plugin::createTransients();
+});
