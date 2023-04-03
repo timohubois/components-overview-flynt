@@ -34,3 +34,7 @@ if (file_exists(plugin_dir_path(FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE) . 'vendor
 add_action('after_setup_theme', function (): void {
     Plugin::init();
 });
+
+register_deactivation_hook(__FILE__, function (): void {
+    Plugin::deleteTransients();
+});
