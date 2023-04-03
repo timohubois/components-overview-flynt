@@ -2,18 +2,23 @@
 
 namespace FlyntComponentsOverview;
 
+use Flynt\ComponentManager;
 use FlyntComponentsOverview\AdminMenu;
 
 defined('ABSPATH') || exit;
 
 class Plugin
 {
+    public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
+    public const TRANSIENT_KEY_COMPONENTS_POST_TYPES = 'flynt_components_overview_components_post_types';
+
     public static function init(): void
     {
         if (class_exists('Flynt\\ComponentManager')) {
             AdminMenu::init();
+            add_action('save_post', [self::class, 'deleteTransients']);
         } else {
-            add_action('admin_notices', [__CLASS__, 'showAdminNoticeThemeNotFound']);
+            add_action('admin_notices', [self::class, 'showAdminNoticeThemeNotFound']);
         }
     }
 
@@ -29,6 +34,12 @@ class Plugin
 
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is escaped
         echo '<div class="notice notice-warning"><p><strong>' . $title . '</strong></p><p>' . $message . '</p></div>';
+    }
+
+    public static function deleteTransients()
+    {
+        delete_transient(self::TRANSIENT_KEY_COMPONENTS);
+        delete_transient(self::TRANSIENT_KEY_COMPONENTS_POST_TYPES);
     }
 
     public static function getPluginRootDir(): string

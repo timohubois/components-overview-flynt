@@ -23,18 +23,22 @@ class ListTableComponents extends WP_List_Table
             'ajax'      => false
         ]);
 
-        $this->components = (object) [];
-        $componentManager = ComponentManager::getInstance();
-        $allComponents = $componentManager->getAll();
-        foreach ($allComponents as $key => $component) {
-            $componentObject = PostsWithComponents::get($key, false, 1);
-            if ($componentObject->totalItems > 0) {
-                $this->components->{$key} = [
-                    'name' => $key,
-                    'postTypes' => PostsWithComponents::getPostTypes($key),
-                    'totalItems' => $componentObject->totalItems
-                ];
+        $this->components = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS);
+        if (false === $this->components || count(get_object_vars($this->components)) === 0) {
+            $this->components = (object) [];
+            $componentManager = ComponentManager::getInstance();
+            $allComponents = $componentManager->getAll();
+            foreach ($allComponents as $key => $component) {
+                $componentObject = PostsWithComponents::get($key, false, 1);
+                if ($componentObject->totalItems > 0) {
+                    $this->components->{$key} = [
+                        'name' => $key,
+                        'postTypes' => PostsWithComponents::getPostTypes($key),
+                        'totalItems' => $componentObject->totalItems
+                    ];
+                }
             }
+            set_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS, $this->components, YEAR_IN_SECONDS);
         }
     }
 
@@ -45,6 +49,7 @@ class ListTableComponents extends WP_List_Table
         $views = [];
 
         $components = $this->components;
+
         $componentsCount = count(get_object_vars($components));
         $views['all'] = sprintf(
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
@@ -54,18 +59,22 @@ class ListTableComponents extends WP_List_Table
             $componentsCount
         );
 
-        $postTypes = [];
-        foreach ($components as $component) {
-            if ($component["postTypes"]) {
-                foreach ($component["postTypes"] as $postType) {
-                    if (!isset($postTypes[$postType->slug])) {
-                        $postTypes[$postType->slug] = $postType;
-                        $postTypes[$postType->slug]->count = 1;
-                    } else {
-                        $postTypes[$postType->slug]->count++;
+        $postTypes = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS_POST_TYPES);
+        if (false === $postTypes || count($postTypes) === 0) {
+            $postTypes = [];
+            foreach ($components as $component) {
+                if ($component["postTypes"]) {
+                    foreach ($component["postTypes"] as $postType) {
+                        if (!isset($postTypes[$postType->slug])) {
+                            $postTypes[$postType->slug] = $postType;
+                            $postTypes[$postType->slug]->count = 1;
+                        } else {
+                            $postTypes[$postType->slug]->count++;
+                        }
                     }
                 }
             }
+            set_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS_POST_TYPES, $postTypes, YEAR_IN_SECONDS);
         }
 
         foreach ($postTypes as $postType) {
