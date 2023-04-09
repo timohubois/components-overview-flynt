@@ -8,17 +8,15 @@ defined('ABSPATH') || exit;
 
 class Plugin
 {
-    public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
-    public const TRANSIENT_KEY_COMPONENTS_POST_TYPES = 'flynt_components_overview_components_post_types';
-
     public static function init(): void
     {
         if (class_exists('Flynt\\ComponentManager')) {
             AdminMenu::init();
-            add_action('save_post', [self::class, 'deleteTransients']);
         } else {
             add_action('admin_notices', [self::class, 'showAdminNoticeThemeNotFound']);
         }
+
+        add_action('save_post', [self::class, 'savePost']);
     }
 
     public static function showAdminNoticeThemeNotFound(): void
@@ -35,15 +33,13 @@ class Plugin
         echo '<div class="notice notice-warning"><p><strong>' . $title . '</strong></p><p>' . $message . '</p></div>';
     }
 
-    public static function deleteTransients()
+    public static function savePost($postId): void
     {
-        delete_transient(self::TRANSIENT_KEY_COMPONENTS);
-        delete_transient(self::TRANSIENT_KEY_COMPONENTS_POST_TYPES);
-    }
+        if (wp_is_post_revision($postId)) {
+            return;
+        }
 
-    public static function createTransients(): void
-    {
-        Components::getInstance()->addComponents();
+        add_option(CronJob::OPTION_NAME_CRONJOB_RUN_ASAP, true);
     }
 
     public static function getPluginRootDir(): string

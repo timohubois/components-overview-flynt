@@ -2,7 +2,6 @@
 
 namespace FlyntComponentsOverview;
 
-use Flynt\ComponentManager;
 use WP_List_Table;
 
 defined('ABSPATH') || exit;
@@ -39,22 +38,18 @@ class ListTableComponents extends WP_List_Table
             $componentsCount
         );
 
-        $postTypes = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS_POST_TYPES);
-        if (false === $postTypes || count($postTypes) === 0) {
-            $postTypes = [];
-            foreach ($components as $component) {
-                if ($component["postTypes"]) {
-                    foreach ($component["postTypes"] as $postType) {
-                        if (!isset($postTypes[$postType->slug])) {
-                            $postTypes[$postType->slug] = $postType;
-                            $postTypes[$postType->slug]->count = 1;
-                        } else {
-                            $postTypes[$postType->slug]->count++;
-                        }
+        $postTypes = [];
+        foreach ($components as $component) {
+            if ($component["postTypes"]) {
+                foreach ($component["postTypes"] as $postType) {
+                    if (!isset($postTypes[$postType->slug])) {
+                        $postTypes[$postType->slug] = $postType;
+                        $postTypes[$postType->slug]->count = 1;
+                    } else {
+                        $postTypes[$postType->slug]->count++;
                     }
                 }
             }
-            set_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS_POST_TYPES, $postTypes, YEAR_IN_SECONDS);
         }
 
         foreach ($postTypes as $postType) {
@@ -105,29 +100,33 @@ class ListTableComponents extends WP_List_Table
                 ));
 
                 $totalCount = sprintf(
-                    '<a href="%s"><strong>%s</strong></a> <span class="count">(%d)</span> | ',
+                    '<a href="%s"><strong>%s</strong></a> <span class="count">(%d)</span>',
                     $url,
                     __('All: ', 'flynt-components-overview'),
                     $item['totalItems']
                 );
 
-                if (!is_array($item['postTypes'])) {
+                $postTypesLinks = [];
+                if (!empty(get_object_vars($item['postTypes']))) {
                     $item['postTypes'] = (array) $item['postTypes'];
+
+                    $postTypesLinks = array_map(function ($postType) use ($item) {
+                        $url = esc_url(sprintf(
+                            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s&componentName=%s'),
+                            $postType->slug,
+                            $item['name']
+                        ));
+                        return sprintf(
+                            '<a href="%s">%s</a> <span class="count">(%d)</span>',
+                            $url,
+                            $postType->label,
+                            $postType->totalItems
+                        );
+                    }, $item['postTypes']);
                 }
-                $postTypesLinks = array_map(function ($postType) use ($item) {
-                    $url = esc_url(sprintf(
-                        admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s&componentName=%s'),
-                        $postType->slug,
-                        $item['name']
-                    ));
-                    return sprintf(
-                        '<a href="%s">%s</a> <span class="count">(%d)</span>',
-                        $url,
-                        $postType->label,
-                        $postType->totalItems
-                    );
-                }, $item['postTypes']);
-                return $totalCount . implode(' | ', $postTypesLinks);
+
+                array_unshift($postTypesLinks, $totalCount);
+                return implode(' | ', $postTypesLinks);
             default:
                 return print_r($item, true);
         }

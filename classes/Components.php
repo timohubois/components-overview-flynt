@@ -8,7 +8,9 @@ defined('ABSPATH') || exit;
 
 class Components
 {
-    protected $components;
+    public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
+
+    protected $components = false;
     protected static $instance = null;
 
     public static function getInstance()
@@ -19,17 +21,23 @@ class Components
         return self::$instance;
     }
 
-    public function getAll(): object
+    public function getAll(bool $force = false): object
     {
-        if (null === $this->components) {
-            $this->addComponents();
+        if (false === $this->components) {
+            $this->addComponents($force);
         }
         return (object) $this->components;
     }
 
-    public function addComponents(): void
+    private function addComponents(bool $force): void
     {
-        $this->components = get_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS);
+        $isCronjobRunning = (bool) get_option(CronJob::OPTION_NAME_CRONJOB_RUNNING);
+        if ($isCronjobRunning && false === $force) {
+            $this->components = (object) [];
+            return;
+        }
+
+        $this->components = get_transient(self::TRANSIENT_KEY_COMPONENTS);
 
         if (false === $this->components || count(get_object_vars($this->components)) === 0) {
             $this->components = (object) [];
@@ -46,7 +54,7 @@ class Components
                     ];
                 }
             }
-            set_transient(PLUGIN::TRANSIENT_KEY_COMPONENTS, $this->components, YEAR_IN_SECONDS);
+            set_transient(self::TRANSIENT_KEY_COMPONENTS, $this->components, WEEK_IN_SECONDS);
         }
     }
 }

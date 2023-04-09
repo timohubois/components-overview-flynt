@@ -66,6 +66,13 @@ class AdminMenu
 
     public static function renderAdminPage(): void
     {
+
+        $isCronjobAsapPlanned = (bool) get_option(CronJob::OPTION_NAME_CRONJOB_RUN_ASAP_PLANNED);
+        $isCronjobRunning = (bool) get_option(CronJob::OPTION_NAME_CRONJOB_RUNNING);
+        if ($isCronjobAsapPlanned || $isCronjobRunning) {
+            RenderAdminPage::nextUpdateNotification();
+        }
+
         $isComponentName = isset($_GET['componentName']);
 
         if ($isComponentName) {
