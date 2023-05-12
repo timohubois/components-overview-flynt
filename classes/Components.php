@@ -39,7 +39,7 @@ class Components
 
         $this->components = get_transient(self::TRANSIENT_KEY_COMPONENTS);
 
-        if (false === $this->components || count(get_object_vars($this->components)) === 0) {
+        if (false === $this->components || 0 === count(get_object_vars($this->components))) {
             $this->components = (object) [];
             $componentManager = ComponentManager::getInstance();
             $componentManagerAllComponents = $componentManager->getAll();
