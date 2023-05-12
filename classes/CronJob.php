@@ -2,9 +2,9 @@
 
 namespace FlyntComponentsOverview;
 
-defined('ABSPATH') || exit;
-
 use FlyntComponentsOverview\Components;
+
+defined('ABSPATH') || exit;
 
 class CronJob
 {
