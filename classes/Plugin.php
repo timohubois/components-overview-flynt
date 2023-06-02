@@ -21,10 +21,10 @@ class Plugin
 
     public static function showAdminNoticeThemeNotFound(): void
     {
-        $title = esc_html__('404 – Theme not found', 'flynt-components-overview');
+        $title = esc_html__('404 – Theme not found', 'components-overview-flynt');
         $message = sprintf(
             // translators: 1: <a> element 2: </a> element
-            __('The “Flynt Components Overview” plugin requires a %1$sFlynt%2$s based theme to work.', 'flynt-components-overview'),
+            __('The “Components Overview for Flynt” plugin requires a %1$sFlynt%2$s based theme to work.', 'components-overview-flynt'),
             "<a href='https://flyntwp.com/' target='_blank' rel='noopener noreferrer'>",
             "</a>"
         );

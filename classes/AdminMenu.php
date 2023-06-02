@@ -33,8 +33,8 @@ class AdminMenu
     public static function addAdminMenu(): void
     {
         add_menu_page(
-            __('Components Overview', 'flynt-components-overview'),
-            __('Components Overview', 'flynt-components-overview'),
+            __('Components Overview for Flynt', 'components-overview-flynt'),
+            __('Components Overview for Flynt', 'components-overview-flynt'),
             'administrator',
             self::MENU_SLUG,
             [self::class, 'renderAdminPage'],

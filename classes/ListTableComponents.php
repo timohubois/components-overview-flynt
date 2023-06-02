@@ -15,8 +15,8 @@ class ListTableComponents extends WP_List_Table
     public function __construct()
     {
         parent::__construct([
-            'singular' => __('Flynt Component Overview', 'flynt-components-overview'),
-            'plural'    => __('Flynt Components Overview', 'flynt-components-overview'),
+            'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
+            'plural'    => __('Components Overview for Flynt', 'components-overview-flynt'),
             'ajax'      => false
         ]);
     }
@@ -34,7 +34,7 @@ class ListTableComponents extends WP_List_Table
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
             esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
             $currentView === 'all' ? ' class="current"' : '',
-            __('All', 'flynt-components-overview'),
+            __('All', 'components-overview-flynt'),
             $componentsCount
         );
 
@@ -102,7 +102,7 @@ class ListTableComponents extends WP_List_Table
                 $totalCount = sprintf(
                     '<a href="%s"><strong>%s</strong></a> <span class="count">(%d)</span>',
                     $url,
-                    __('All: ', 'flynt-components-overview'),
+                    __('All: ', 'components-overview-flynt'),
                     $item['totalItems']
                 );
 
@@ -136,8 +136,8 @@ class ListTableComponents extends WP_List_Table
     public function get_columns()
     {
         $columns = [
-            'name'     => __('Component', 'flynt-components-overview'),
-            'results'  => __('Results', 'flynt-components-overview')
+            'name'     => __('Component', 'components-overview-flynt'),
+            'results'  => __('Results', 'components-overview-flynt')
         ];
         return $columns;
     }

@@ -20,8 +20,8 @@ class ListTablePosts extends WP_List_Table
     public function __construct()
     {
         parent::__construct([
-            'singular' => __('Flynt Component Overview', 'flynt-components-overview'),
-            'plural'    => __('Flynt Components Overview', 'flynt-components-overview'),
+            'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
+            'plural'    => __('Components Overview for Flynt', 'components-overview-flynt'),
             'ajax'      => false
         ]);
     }
@@ -42,7 +42,7 @@ class ListTablePosts extends WP_List_Table
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
             esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&componentName=' . $componentName)),
             $currentView === 'all' ? ' class="current"' : '',
-            __('All', 'flynt-components-overview'),
+            __('All', 'components-overview-flynt'),
             $componentCount
         );
 
@@ -113,9 +113,9 @@ class ListTablePosts extends WP_List_Table
     public function get_columns()
     {
         $columns = [
-            'post_title'     => __('Title', 'flynt-components-overview'),
-            'post_type'  => __('Post Type', 'flynt-components-overview'),
-            'post_date' => __('Date', 'flynt-components-overview')
+            'post_title'     => __('Title', 'components-overview-flynt'),
+            'post_type'  => __('Post Type', 'components-overview-flynt'),
+            'post_date' => __('Date', 'components-overview-flynt')
         ];
         return $columns;
     }

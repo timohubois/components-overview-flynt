@@ -1,6 +1,6 @@
-# Flynt Components Overview
+# Components Overview for Flynt
 
-Flynt Components Overview is a plugin to get an overview of where components of the [Flynt WordPress theme](https://github.com/flyntwp/flynt) are currently used in acf flexible content fields.
+Components Overview for Flynt is a plugin to get an overview of where components of the [Flynt WordPress theme](https://github.com/flyntwp/flynt) are currently used in acf flexible content fields.
 
 ## Requirements
 
