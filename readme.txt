@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 5.0
 Tested up to: 6.2
-Stable tag: 1.2.0
+Stable tag: 1.0.0
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -38,11 +38,5 @@ Components Overview for Flynt creates an admin menu page with a list table to ge
 * By default: The homepage is immediately monitored and alerts are sent to the stored admin email.
 
 == Changelog ==
-= 1.2 =
-* Add cronjob basic auth fallback
-
-= 1.1 =
-* Add cronjob
-
 = 1.0 =
 * Initial Release
