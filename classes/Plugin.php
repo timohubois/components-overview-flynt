@@ -10,27 +10,26 @@ class Plugin
 {
     public static function init(): void
     {
-        if (class_exists('Flynt\\ComponentManager')) {
-            AdminMenu::init();
-        } else {
+        if (!class_exists('Flynt\\ComponentManager')) {
             add_action('admin_notices', [self::class, 'showAdminNoticeThemeNotFound']);
+            return;
         }
 
+        AdminMenu::init();
         add_action('save_post', [self::class, 'savePost']);
     }
 
     public static function showAdminNoticeThemeNotFound(): void
     {
-        $title = esc_html__('404 – Theme not found', 'components-overview-flynt');
+        $title = __('404 – Theme not found', 'components-overview-flynt');
         $message = sprintf(
             // translators: 1: <a> element 2: </a> element
-            __('The “Components Overview for Flynt” plugin requires a %1$sFlynt%2$s based theme to work.', 'components-overview-flynt'),
+            __('The “Components Overview for Flynt” plugin requires a active %1$sFlynt%2$s based theme to work.', 'components-overview-flynt'),
             "<a href='https://flyntwp.com/' target='_blank' rel='noopener noreferrer'>",
             "</a>"
         );
 
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message is escaped
-        echo '<div class="notice notice-warning"><p><strong>' . $title . '</strong></p><p>' . $message . '</p></div>';
+        echo '<div class="notice notice-warning"><p><strong>' . esc_html__($title) . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
     }
 
     public static function savePost($postId): void
