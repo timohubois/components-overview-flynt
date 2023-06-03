@@ -88,8 +88,8 @@ class ListTablePosts extends WP_List_Table
                 );
                 _post_states($item->post);
                 echo "</strong>\n";
-                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $actions are escaped by using sprintf
-                echo $this->row_actions($actions);
+
+                echo wp_kses_post($this->row_actions($actions));
                 return;
             case 'post_type':
                 $url = esc_url(sprintf(
