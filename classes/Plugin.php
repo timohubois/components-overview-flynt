@@ -16,7 +16,6 @@ class Plugin
         }
 
         AdminMenu::init();
-        add_action('save_post', [self::class, 'savePost']);
     }
 
     public static function showAdminNoticeThemeNotFound(): void

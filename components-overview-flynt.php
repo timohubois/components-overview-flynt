@@ -35,6 +35,8 @@ add_action('after_setup_theme', function (): void {
     CronJob::init();
 });
 
+add_action('save_post', [Plugin::class, 'savePost']);
+
 register_activation_hook(__FILE__, function (): void {
     if (is_multisite()) {
         foreach (get_sites(['fields' => 'ids']) as $blogId) {
