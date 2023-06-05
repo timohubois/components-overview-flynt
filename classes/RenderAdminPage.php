@@ -38,13 +38,15 @@ class RenderAdminPage
     {
         $table = new ListTableComponents();
         $table->prepare_items();
+
+        $inputPageValue = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Components Overview for Flynt', 'components-overview-flynt') ?></h1>
             <hr class="wp-header-end">
             <h2 class="screen-reader-text"><?php esc_html_e('Filter components list', 'components-overview-flynt') ?></h2>
             <form id="components-overview-flynt" method="get">
-                <input type="hidden" name="page" value="<?php isset($_GET['page']) ? esc_html_e(sanitize_text_field(wp_unslash($_GET['page']))) : '' ?>" />
+                <input type="hidden" name="page" value="<?php echo esc_html($inputPageValue) ?>" />
                 <?php $table->views() ?>
                 <?php $table->search_box(esc_attr__('Search', 'components-overview-flynt'), 'search_id'); ?>
                 <?php $table->display() ?>
@@ -57,9 +59,13 @@ class RenderAdminPage
     {
         $table = new ListTablePosts();
         $table->prepare_items();
+
+        $inputPageValue = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        $inputPostTypeValue = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : '';
+        $inputComponentNameValue = isset($_GET['componentName']) ? sanitize_text_field(wp_unslash($_GET['componentName'])) : '';
         ?>
         <div class="wrap">
-            <h1 class="wp-heading-inline"><?php esc_html_e($componentName); ?></h1>
+            <h1 class="wp-heading-inline"><?php echo esc_html($componentName); ?></h1>
             <?php printf(
                 '<a href="%s" class="page-title-action">%s</a>',
                 esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
@@ -68,9 +74,9 @@ class RenderAdminPage
             <hr class="wp-header-end">
             <h2 class="screen-reader-text"><?php esc_html_e('Filter posts list', 'components-overview-flynt') ?></h2>
             <form id="component-overview-flynt-posts" method="get">
-                <input type="hidden" name="page" value="<?php isset($_GET['page']) ? esc_html_e(sanitize_text_field(wp_unslash($_GET['page']))) : '' ?>" />
-                <input type="hidden" name="postType" value="<?php isset($_GET['postType']) ? esc_html_e(sanitize_text_field(wp_unslash($_GET['postType']))) : '' ?>" />
-                <input type="hidden" name="componentName" value="<?php isset($_GET['componentName']) ? esc_html_e(sanitize_text_field(wp_unslash($_GET['componentName']))) : '' ?>" />
+                <input type="hidden" name="page" value="<?php echo esc_html($inputPageValue) ?>" />
+                <input type="hidden" name="postType" value="<?php esc_html($inputPostTypeValue) ?>" />
+                <input type="hidden" name="componentName" value="<?php echo esc_html($inputComponentNameValue) ?>" />
                 <?php $table->views() ?>
                 <?php $table->search_box(esc_attr__('Search', 'components-overview-flynt'), 'search_posts'); ?>
                 <?php $table->display() ?>
