@@ -28,7 +28,7 @@ class Plugin
             "</a>"
         );
 
-        echo '<div class="notice notice-warning"><p><strong>' . esc_html__($title) . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
+        echo '<div class="notice notice-warning"><p><strong>' . esc_html($title) . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
     }
 
     public static function savePost($postId): void
