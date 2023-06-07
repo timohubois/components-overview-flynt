@@ -16,6 +16,9 @@ Components Overview for Flynt creates an admin menu page with a list table to ge
 
 **Please note:** The active theme of the website must use the [Flynt Theme](https://flyntwp.com).
 
+== Want to contribute? ==
+Check out the Plugin [GitHub Repository](https://github.com/timohubois/components-overview-flynt).
+
 == Installation ==
 
 = INSTALL WITHIN WORDPRESS =
