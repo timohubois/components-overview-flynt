@@ -154,9 +154,7 @@ class ListTableComponents extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
     public function prepare_items()
     {
-        $perPage = get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)
-            ? (int) get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)
-            : 20;
+        $perPage = $this->get_items_per_page('components_overview_posts_per_page', 20);
         $pageNumber = $this->get_pagenum();
         $offset = ($pageNumber - 1) * $perPage;
         $columns = $this->get_columns();
