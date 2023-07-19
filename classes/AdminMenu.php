@@ -32,7 +32,7 @@ class AdminMenu
 
     public static function addAdminMenu(): void
     {
-        add_menu_page(
+        $menuPage = add_menu_page(
             __('Components Overview for Flynt', 'components-overview-flynt'),
             __('Components Overview for Flynt', 'components-overview-flynt'),
             'administrator',
@@ -42,10 +42,7 @@ class AdminMenu
             85
         );
 
-        add_action('current_screen', function (): void {
-            $screen = get_current_screen();
-            add_action('load-' . $screen->id, [self::class, 'addScreenOptions']);
-        });
+        add_action('load-' . $menuPage, [self::class, 'addScreenOptions']);
     }
 
     public static function addScreenOptions(): void
