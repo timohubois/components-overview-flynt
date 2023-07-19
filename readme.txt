@@ -37,3 +37,6 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 == Changelog ==
 = 1.0 =
 * Initial Release
+
+= 1.0.1 =
+* Fixed an issue in combination with screen_options
