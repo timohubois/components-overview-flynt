@@ -162,7 +162,6 @@ class ListTableComponents extends WP_List_Table
         $sortable = $this->get_sortable_columns();
 
         $data = get_object_vars(Components::getInstance()->getAll());
-        $totalItems = count($data);
 
         $postType = !empty($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : false;
         $orderby = !empty($_GET['orderby']) ? sanitize_text_field(wp_unslash($_GET['orderby'])) : 'name';
@@ -186,7 +185,6 @@ class ListTableComponents extends WP_List_Table
                 }
                 return false;
             });
-            $totalItems = count($data);
         }
 
         if ($orderby) {
@@ -196,6 +194,9 @@ class ListTableComponents extends WP_List_Table
             });
         }
 
+        $totalItems = count($data);
+        $totalPages = ceil($totalItems / $perPage);
+
         $data = array_slice($data, $offset, $perPage);
 
         $this->_column_headers = [$columns, $hidden, $sortable];
@@ -204,7 +205,7 @@ class ListTableComponents extends WP_List_Table
         $this->set_pagination_args([
             'total_items' => $totalItems,
             'per_page' => $perPage,
-            'total_pages' => ceil($totalItems / $perPage),
+            'total_pages' => $totalPages,
         ]);
     }
 }
