@@ -23,10 +23,10 @@
         "php": ">=8.0"
     },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "wp-cli/wp-cli-bundle": "^2.7",
-        "wp-coding-standards/wpcs": "^2.3"
+        "wp-cli/wp-cli-bundle": "^2.8",
+        "wp-coding-standards/wpcs": "^3.0"
     },
     "autoload": {
         "psr-4": {
