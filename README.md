@@ -15,8 +15,8 @@ Components Overview for Flynt is a plugin to get an overview of where components
 ## Development
 
 1. Perform [Installation](#installation)
-3. Make sure you have the correct [requirements](#requirements)
-2. Run `composer i` to install composer dependency.
+2. Make sure you have the correct [requirements](#requirements)
+3. Run `composer i` to install composer dependency.
 
 ## License
 
