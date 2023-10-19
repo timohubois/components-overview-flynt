@@ -8,7 +8,7 @@
  * Requires at least: 5.0
  * Requires PHP:      8.0
  * Author:            Timo Hubois
- * Author URI:        https://pixelsaft.de
+ * Author URI:        https://pixelsaft.wtf
  * Text Domain:       components-overview-flynt
  * Domain Path:       /languages
  * License:           GPLv3 or later
