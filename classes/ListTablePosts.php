@@ -130,7 +130,7 @@ class ListTablePosts extends WP_List_Table
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
-    public function prepare_items()
+    public function prepare_items(): void
     {
         $perPage = get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)
             ? (int) get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)

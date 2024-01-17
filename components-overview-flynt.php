@@ -72,7 +72,7 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
         define('WP_CRON_CUSTOM_HTTP_BASIC_PASSWORD', $password);
     }
 
-    add_filter('cron_request', function (array $cronRequest) {
+    add_filter('cron_request', function (array $cronRequest): array {
         $headers = [
             'Authorization' => sprintf(
                 'Basic %s',

@@ -110,7 +110,7 @@ class ListTableComponents extends WP_List_Table
                 if (!empty(get_object_vars($item['postTypes']))) {
                     $item['postTypes'] = (array) $item['postTypes'];
 
-                    $postTypesLinks = array_map(function ($postType) use ($item) {
+                    $postTypesLinks = array_map(function ($postType) use ($item): string {
                         $url = esc_url(sprintf(
                             admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s&componentName=%s'),
                             $postType->slug,
@@ -150,7 +150,7 @@ class ListTableComponents extends WP_List_Table
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
-    public function prepare_items()
+    public function prepare_items(): void
     {
         $perPage = $this->get_items_per_page('components_overview_posts_per_page', 20);
         $pageNumber = $this->get_pagenum();
@@ -167,13 +167,13 @@ class ListTableComponents extends WP_List_Table
         $search = !empty($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
 
         if (!empty($search)) {
-            $data = array_filter($data, function ($item) use ($search) {
+            $data = array_filter($data, function (array $item) use ($search): bool {
                 return str_contains(strtolower($item['name']), strtolower($search));
             });
         }
 
         if ($postType) {
-            $data = array_filter($data, function ($component) use ($postType) {
+            $data = array_filter($data, function (array $component) use ($postType): bool {
                 if ($component["postTypes"]) {
                     foreach ($component["postTypes"] as $postTypeItem) {
                         if ($postTypeItem->slug === $postType) {
@@ -186,7 +186,7 @@ class ListTableComponents extends WP_List_Table
         }
 
         if ($orderby) {
-            usort($data, function ($a, $b) use ($orderby, $order) {
+            usort($data, function (array $a, array $b) use ($orderby, $order): int {
                 $result = strcmp($a[$orderby], $b[$orderby]);
                 return ($order === 'asc') ? $result : -$result;
             });
