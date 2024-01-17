@@ -35,7 +35,7 @@ final class PostsWithComponents
         }
 
         $searchClause = '';
-        if (!empty($search)) {
+        if ($search !== '' && $search !== '0') {
             $searchClause = $wpdb->prepare(
                 sprintf('AND (%s.post_title LIKE %%s OR %s.post_content LIKE %%s)', $wpdb->posts, $wpdb->posts),
                 '%' . $wpdb->esc_like($search) . '%',

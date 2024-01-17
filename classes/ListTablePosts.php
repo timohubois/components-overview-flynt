@@ -34,7 +34,7 @@ final class ListTablePosts extends WP_List_Table
         $views = [];
 
         $componentCount = PostsWithComponents::getCount($componentName);
-        if (!$componentCount) {
+        if ($componentCount === 0) {
             return $views;
         }
 
@@ -143,11 +143,11 @@ final class ListTablePosts extends WP_List_Table
 
         $this->_column_headers = [$columns, $hidden, $sortable];
 
-        $componentName = !empty($_GET['componentName']) ? sanitize_text_field(wp_unslash($_GET['componentName'])) : false;
-        $postType = !empty($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : false;
-        $orderby = !empty($_GET['orderby']) ? sanitize_text_field(wp_unslash($_GET['orderby'])) : 'post_date';
-        $order = !empty($_GET['order']) ? sanitize_text_field(wp_unslash($_GET['order'])) : 'desc';
-        $search = !empty($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $componentName = empty($_GET['componentName']) ? false : sanitize_text_field(wp_unslash($_GET['componentName']));
+        $postType = empty($_GET['postType']) ? false : sanitize_text_field(wp_unslash($_GET['postType']));
+        $orderby = empty($_GET['orderby']) ? 'post_date' : sanitize_text_field(wp_unslash($_GET['orderby']));
+        $order = empty($_GET['order']) ? 'desc' : sanitize_text_field(wp_unslash($_GET['order']));
+        $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
 
         $data = PostsWithComponents::get($componentName, $postType, $perPage, $offset, $orderby, $order, $search);
 

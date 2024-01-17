@@ -108,7 +108,7 @@ final class ListTableComponents extends WP_List_Table
                 );
 
                 $postTypesLinks = [];
-                if (!empty(get_object_vars($item['postTypes']))) {
+                if (get_object_vars($item['postTypes']) !== []) {
                     $item['postTypes'] = (array) $item['postTypes'];
 
                     $postTypesLinks = array_map(static function ($postType) use ($item) : string {
@@ -162,10 +162,10 @@ final class ListTableComponents extends WP_List_Table
 
         $data = get_object_vars(Components::getInstance()->getAll());
 
-        $postType = !empty($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : false;
-        $orderby = !empty($_GET['orderby']) ? sanitize_text_field(wp_unslash($_GET['orderby'])) : 'name';
-        $order = !empty($_GET['order']) ? sanitize_text_field(wp_unslash($_GET['order'])) : 'asc';
-        $search = !empty($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $postType = empty($_GET['postType']) ? false : sanitize_text_field(wp_unslash($_GET['postType']));
+        $orderby = empty($_GET['orderby']) ? 'name' : sanitize_text_field(wp_unslash($_GET['orderby']));
+        $order = empty($_GET['order']) ? 'asc' : sanitize_text_field(wp_unslash($_GET['order']));
+        $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
 
         if (!empty($search)) {
             $data = array_filter($data, static function (array $item) use ($search) : bool {
