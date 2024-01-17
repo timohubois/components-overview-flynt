@@ -11,7 +11,6 @@ final class AdminMenu
     public static function init(): void
     {
         $isEmptyComponentName = isset($_GET['componentName']) && empty($_GET['componentName']);
-
         if ($isEmptyComponentName && isset($_GET['postType'])) {
             $url = sprintf(
                 admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
@@ -19,12 +18,13 @@ final class AdminMenu
             );
             wp_redirect($url);
             exit;
-        } elseif ($isEmptyComponentName) {
+        }
+
+        if ($isEmptyComponentName) {
             $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
             wp_redirect($url);
             exit;
         }
-
 
         add_action('admin_menu', [self::class, 'addAdminMenu']);
         add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
