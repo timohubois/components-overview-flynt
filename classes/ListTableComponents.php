@@ -46,7 +46,7 @@ final class ListTableComponents extends WP_List_Table
                         $postTypes[$postType->slug] = $postType;
                         $postTypes[$postType->slug]->count = 1;
                     } else {
-                        $postTypes[$postType->slug]->count++;
+                        ++$postTypes[$postType->slug]->count;
                     }
                 }
             }
@@ -88,6 +88,7 @@ final class ListTableComponents extends WP_List_Table
                         $item['name']
                     ));
                 }
+
                 return sprintf(
                     '<a href="%s"><strong>%s</strong></a>',
                     $url,
@@ -110,7 +111,7 @@ final class ListTableComponents extends WP_List_Table
                 if (!empty(get_object_vars($item['postTypes']))) {
                     $item['postTypes'] = (array) $item['postTypes'];
 
-                    $postTypesLinks = array_map(function ($postType) use ($item): string {
+                    $postTypesLinks = array_map(static function ($postType) use ($item) : string {
                         $url = esc_url(sprintf(
                             admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s&componentName=%s'),
                             $postType->slug,
@@ -167,13 +168,13 @@ final class ListTableComponents extends WP_List_Table
         $search = !empty($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
 
         if (!empty($search)) {
-            $data = array_filter($data, function (array $item) use ($search): bool {
+            $data = array_filter($data, static function (array $item) use ($search) : bool {
                 return str_contains(strtolower($item['name']), strtolower($search));
             });
         }
 
         if ($postType) {
-            $data = array_filter($data, function (array $component) use ($postType): bool {
+            $data = array_filter($data, static function (array $component) use ($postType) : bool {
                 if ($component["postTypes"]) {
                     foreach ($component["postTypes"] as $postTypeItem) {
                         if ($postTypeItem->slug === $postType) {
@@ -181,12 +182,13 @@ final class ListTableComponents extends WP_List_Table
                         }
                     }
                 }
+                
                 return false;
             });
         }
 
         if ($orderby) {
-            usort($data, function (array $a, array $b) use ($orderby, $order): int {
+            usort($data, static function (array $a, array $b) use ($orderby, $order) : int {
                 $result = strcmp($a[$orderby], $b[$orderby]);
                 return ($order === 'asc') ? $result : -$result;
             });

@@ -27,17 +27,16 @@ if (file_exists(plugin_dir_path(FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE) . 'vendor
     require plugin_dir_path(FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE) . 'vendor/autoload.php';
 }
 
-add_action('after_setup_theme', function (): void {
+add_action('after_setup_theme', static function () : void {
     if (is_admin()) {
         Plugin::init();
     }
-
     CronJob::init();
 });
 
 add_action('save_post', [Plugin::class, 'savePost']);
 
-register_activation_hook(__FILE__, function (): void {
+register_activation_hook(__FILE__, static function () : void {
     if (is_multisite()) {
         foreach (get_sites(['fields' => 'ids']) as $blogId) {
             switch_to_blog($blogId);
@@ -49,7 +48,7 @@ register_activation_hook(__FILE__, function (): void {
     }
 });
 
-register_deactivation_hook(__FILE__, function (): void {
+register_deactivation_hook(__FILE__, static function () : void {
     if (is_multisite()) {
         foreach (get_sites(['fields' => 'ids']) as $blogId) {
             switch_to_blog($blogId);
@@ -67,12 +66,13 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
         $username = sanitize_text_field(wp_unslash($_SERVER['PHP_AUTH_USER'])) ?? '';
         define('WP_CRON_CUSTOM_HTTP_BASIC_USERNAME', $username);
     }
+
     if (!defined('WP_CRON_CUSTOM_HTTP_BASIC_PASSWORD')) {
         $password = sanitize_text_field(wp_unslash($_SERVER['PHP_AUTH_PW'])) ?? '';
         define('WP_CRON_CUSTOM_HTTP_BASIC_PASSWORD', $password);
     }
 
-    add_filter('cron_request', function (array $cronRequest): array {
+    add_filter('cron_request', static function (array $cronRequest) : array {
         $headers = [
             'Authorization' => sprintf(
                 'Basic %s',

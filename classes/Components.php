@@ -11,6 +11,7 @@ final class Components
     public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
 
     private $components = false;
+
     private static $instance;
 
     public static function getInstance()
@@ -18,6 +19,7 @@ final class Components
         if (null === self::$instance) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
@@ -26,6 +28,7 @@ final class Components
         if (false === $this->components) {
             $this->addComponents($force);
         }
+
         return (object) $this->components;
     }
 
@@ -39,7 +42,7 @@ final class Components
 
         $this->components = get_transient(self::TRANSIENT_KEY_COMPONENTS);
 
-        if (false === $this->components || 0 === count(get_object_vars($this->components))) {
+        if (false === $this->components || [] === get_object_vars($this->components)) {
             $this->components = (object) [];
             $componentManager = ComponentManager::getInstance();
             $componentManagerAllComponents = $componentManager->getAll();
@@ -54,6 +57,7 @@ final class Components
                     ];
                 }
             }
+
             set_transient(self::TRANSIENT_KEY_COMPONENTS, $this->components, WEEK_IN_SECONDS);
         }
     }

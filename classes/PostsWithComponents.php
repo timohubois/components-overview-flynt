@@ -29,7 +29,7 @@ final class PostsWithComponents
         $postTypeClause = '';
         if ($postType) {
             $postTypeClause = $wpdb->prepare(
-                "AND {$wpdb->posts}.post_type = %s ",
+                sprintf('AND %s.post_type = %%s ', $wpdb->posts),
                 $postType
             );
         }
@@ -37,7 +37,7 @@ final class PostsWithComponents
         $searchClause = '';
         if (!empty($search)) {
             $searchClause = $wpdb->prepare(
-                "AND ({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s)",
+                sprintf('AND (%s.post_title LIKE %%s OR %s.post_content LIKE %%s)', $wpdb->posts, $wpdb->posts),
                 '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%'
             );
@@ -65,7 +65,7 @@ final class PostsWithComponents
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- It’s prepared above
         $results = $wpdb->get_results($sql, OBJECT);
 
-        $results = array_map(function ($value) use ($componentName) {
+        $results = array_map(static function ($value) use ($componentName) {
             $value->componentName = $componentName;
             $value->post_type = get_post_type_object($value->post_type);
             $value->post = get_post($value->ID);
@@ -98,7 +98,7 @@ final class PostsWithComponents
         $postTypeClause = '';
         if ($postType) {
             $postTypeClause = $wpdb->prepare(
-                "AND {$wpdb->posts}.post_type = %s ",
+                sprintf('AND %s.post_type = %%s ', $wpdb->posts),
                 $postType
             );
         }
@@ -151,7 +151,7 @@ final class PostsWithComponents
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- It’s prepared above
         $results = $wpdb->get_results($sql, OBJECT);
 
-        $postTypes = array_map(function ($value) use ($componentName) {
+        $postTypes = array_map(static function ($value) use ($componentName) {
             return (object) [
                 'label' => get_post_type_object($value->post_type)->label,
                 'slug' => $value->post_type,

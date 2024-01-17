@@ -9,10 +9,13 @@ defined('ABSPATH') || exit;
 final class CronJob
 {
     public const OPTION_NAME_CRONJOB_RUN_ASAP = 'flynt_components_overview_cronjob_asap';
+
     public const OPTION_NAME_CRONJOB_RUN_ASAP_PLANNED = 'flynt_components_overview_cronjob_asap_planned';
+
     public const OPTION_NAME_CRONJOB_RUNNING = 'flynt_components_overview_cronjob_running';
 
     public $hook = 'flynt_components_update_transients';
+
     private static $instance;
 
     public static function getInstance(): self
@@ -20,6 +23,7 @@ final class CronJob
         if (self::$instance === null) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
