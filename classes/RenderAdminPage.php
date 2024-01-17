@@ -4,7 +4,7 @@ namespace FlyntComponentsOverview;
 
 defined('ABSPATH') || exit;
 
-class RenderAdminPage
+final class RenderAdminPage
 {
     public static function nextUpdateNotification(): void
     {

@@ -4,7 +4,7 @@ namespace FlyntComponentsOverview;
 
 defined('ABSPATH') || exit;
 
-class PostsWithComponents
+final class PostsWithComponents
 {
     public static function get(
         string|bool $componentName = false,

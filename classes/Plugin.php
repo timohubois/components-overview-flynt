@@ -6,7 +6,7 @@ use FlyntComponentsOverview\AdminMenu;
 
 defined('ABSPATH') || exit;
 
-class Plugin
+final class Plugin
 {
     public static function init(): void
     {

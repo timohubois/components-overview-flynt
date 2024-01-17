@@ -15,7 +15,7 @@ if (!class_exists('WP_Posts_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-posts-list-table.php');
 }
 
-class ListTablePosts extends WP_List_Table
+final class ListTablePosts extends WP_List_Table
 {
     public function __construct()
     {

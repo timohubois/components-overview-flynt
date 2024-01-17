@@ -6,12 +6,12 @@ use Flynt\ComponentManager;
 
 defined('ABSPATH') || exit;
 
-class Components
+final class Components
 {
     public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
 
-    protected $components = false;
-    protected static $instance;
+    private $components = false;
+    private static $instance;
 
     public static function getInstance()
     {

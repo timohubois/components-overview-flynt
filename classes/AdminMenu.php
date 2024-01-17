@@ -4,7 +4,7 @@ namespace FlyntComponentsOverview;
 
 defined('ABSPATH') || exit;
 
-class AdminMenu
+final class AdminMenu
 {
     const MENU_SLUG = 'flyntComponentsOverview';
 
