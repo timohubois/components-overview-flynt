@@ -151,13 +151,11 @@ final class PostsWithComponents
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- It’s prepared above
         $results = $wpdb->get_results($sql, OBJECT);
 
-        $postTypes = array_map(static function ($value) use ($componentName) {
-            return (object) [
-                'label' => get_post_type_object($value->post_type)->label,
-                'slug' => $value->post_type,
-                'totalItems' => self::getCount($componentName, $value->post_type),
-            ];
-        }, $results);
+        $postTypes = array_map(static fn($value) => (object) [
+            'label' => get_post_type_object($value->post_type)->label,
+            'slug' => $value->post_type,
+            'totalItems' => self::getCount($componentName, $value->post_type),
+        ], $results);
 
         if (is_multisite()) {
             restore_current_blog();

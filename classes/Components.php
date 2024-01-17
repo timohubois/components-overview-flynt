@@ -12,11 +12,11 @@ final class Components
 
     private $components = false;
 
-    private static $instance;
+    private static ?\FlyntComponentsOverview\Components $instance = null;
 
-    public static function getInstance()
+    public static function getInstance(): Components
     {
-        if (null === self::$instance) {
+        if (!self::$instance instanceof \FlyntComponentsOverview\Components) {
             self::$instance = new self();
         }
 

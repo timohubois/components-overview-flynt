@@ -151,9 +151,9 @@ final class ListTablePosts extends WP_List_Table
 
         $data = PostsWithComponents::get($componentName, $postType, $perPage, $offset, $orderby, $order, $search);
 
-        $this->items = isset($data->items) ? $data->items : [];
+        $this->items = $data->items ?? [];
 
-        $totalItems = isset($data->totalItems) ? $data->totalItems : 0;
+        $totalItems = $data->totalItems ?? 0;
         $this->set_pagination_args([
             'total_items' => $totalItems,
             'per_page'    => $perPage,

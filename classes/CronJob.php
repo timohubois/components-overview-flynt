@@ -16,11 +16,11 @@ final class CronJob
 
     public $hook = 'flynt_components_update_transients';
 
-    private static $instance;
+    private static ?\FlyntComponentsOverview\CronJob $instance = null;
 
-    public static function getInstance(): self
+    public static function getInstance(): CronJob
     {
-        if (self::$instance === null) {
+        if (!self::$instance instanceof \FlyntComponentsOverview\CronJob) {
             self::$instance = new self();
         }
 

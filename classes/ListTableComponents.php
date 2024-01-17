@@ -168,9 +168,7 @@ final class ListTableComponents extends WP_List_Table
         $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
 
         if (!empty($search)) {
-            $data = array_filter($data, static function (array $item) use ($search) : bool {
-                return str_contains(strtolower($item['name']), strtolower($search));
-            });
+            $data = array_filter($data, static fn(array $item): bool => str_contains(strtolower($item['name']), strtolower($search)));
         }
 
         if ($postType) {

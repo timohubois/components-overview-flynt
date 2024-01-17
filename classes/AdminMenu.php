@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 final class AdminMenu
 {
-    const MENU_SLUG = 'flyntComponentsOverview';
+    public const MENU_SLUG = 'flyntComponentsOverview';
 
     public static function init(): void
     {
