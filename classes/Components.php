@@ -11,7 +11,7 @@ class Components
     public const TRANSIENT_KEY_COMPONENTS = 'flynt_components_overview_components';
 
     protected $components = false;
-    protected static $instance = null;
+    protected static $instance;
 
     public static function getInstance()
     {

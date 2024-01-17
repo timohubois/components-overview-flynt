@@ -112,23 +112,21 @@ class ListTablePosts extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
     public function get_columns()
     {
-        $columns = [
+        return [
             'post_title'     => __('Title', 'components-overview-flynt'),
             'post_type'  => __('Post Type', 'components-overview-flynt'),
             'post_date' => __('Date', 'components-overview-flynt')
         ];
-        return $columns;
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
     public function get_sortable_columns()
     {
-        $sortable_columns = [
+        return [
             'post_title'     => ['post_title', false],
             'post_type'  => ['post_type', false],
             'post_date' => ['post_date', false]
         ];
-        return $sortable_columns;
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name

@@ -135,20 +135,18 @@ class ListTableComponents extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
     public function get_columns()
     {
-        $columns = [
+        return [
             'name'     => __('Component', 'components-overview-flynt'),
             'results'  => __('Results', 'components-overview-flynt')
         ];
-        return $columns;
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
     public function get_sortable_columns()
     {
-        $sortable_columns = [
+        return [
             'name'     => ['name', false]
         ];
-        return $sortable_columns;
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name

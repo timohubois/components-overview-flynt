@@ -13,7 +13,7 @@ class CronJob
     public const OPTION_NAME_CRONJOB_RUNNING = 'flynt_components_overview_cronjob_running';
 
     public $hook = 'flynt_components_update_transients';
-    protected static $instance = null;
+    protected static $instance;
 
     public static function getInstance(): self
     {
