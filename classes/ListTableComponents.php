@@ -170,7 +170,7 @@ class ListTableComponents extends WP_List_Table
 
         if (!empty($search)) {
             $data = array_filter($data, function ($item) use ($search) {
-                return strpos(strtolower($item['name']), strtolower($search)) !== false;
+                return str_contains(strtolower($item['name']), strtolower($search));
             });
         }
 
