@@ -25,6 +25,7 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "rector/rector": "^0.19.1",
         "wp-cli/wp-cli-bundle": "^2.8",
         "wp-coding-standards/wpcs": "^3.0"
     },
@@ -35,6 +36,7 @@
     },
     "scripts": {
         "php:lint": "vendor/bin/phpcs --standard=phpcs.xml .",
-        "php:lint:fix": "vendor/bin/phpcbf --standard=phpcs.xml ."
+        "php:lint:fix": "vendor/bin/phpcbf --standard=phpcs.xml .",
+        "rector:run": "vendor/bin/rector process"
     }
 }
