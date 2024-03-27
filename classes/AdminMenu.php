@@ -10,22 +10,6 @@ final class AdminMenu
 
     public static function init(): void
     {
-        $isEmptyComponentName = isset($_GET['componentName']) && empty($_GET['componentName']);
-        if ($isEmptyComponentName && isset($_GET['postType'])) {
-            $url = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
-                sanitize_text_field(wp_unslash($_GET['postType']))
-            );
-            wp_redirect($url);
-            exit;
-        }
-
-        if ($isEmptyComponentName) {
-            $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
-            wp_redirect($url);
-            exit;
-        }
-
         add_action('admin_menu', [self::class, 'addAdminMenu']);
         add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
     }
@@ -43,6 +27,7 @@ final class AdminMenu
         );
 
         add_action('load-' . $menuPage, [self::class, 'addScreenOptions']);
+        add_action('load-' . $menuPage, [self::class, 'maybeRedirect']);
     }
 
     public static function addScreenOptions(): void
@@ -63,22 +48,44 @@ final class AdminMenu
 
     public static function renderAdminPage(): void
     {
+        $isLayoutName = isset($_GET['layoutName']);
 
-        $isCronjobAsapPlanned = (bool) get_option(CronJob::OPTION_NAME_CRONJOB_RUN_ASAP_PLANNED);
-        $isCronjobRunning = (bool) get_option(CronJob::OPTION_NAME_CRONJOB_RUNNING);
-        if ($isCronjobAsapPlanned || $isCronjobRunning) {
-            RenderAdminPage::nextUpdateNotification();
-        }
-
-        $isComponentName = isset($_GET['componentName']);
-
-        if ($isComponentName) {
-            $componentName = sanitize_text_field(wp_unslash($_GET['componentName']));
-            RenderAdminPage::postsWithComponent($componentName);
+        if ($isLayoutName) {
+            $layoutName = sanitize_text_field(wp_unslash($_GET['layoutName']));
+            RenderAdminPage::postsWithLayout($layoutName);
         } else {
-            RenderAdminPage::componentsOverview();
+            RenderAdminPage::layoutsOverview();
         }
 
         set_screen_options();
+    }
+
+    public static function maybeRedirect(): void
+    {
+        $shouldRefreshLayoutCache = isset($_GET['action']) && $_GET['action'] === 'refreshLayoutCache';
+        if ($shouldRefreshLayoutCache) {
+            $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
+            $flexibleContentLayouts->deleteTransients();
+
+            $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
+            wp_redirect(esc_url($url));
+            exit;
+        }
+
+        $isEmptyLayoutName = isset($_GET['layoutName']) && empty($_GET['layoutName']);
+        if ($isEmptyLayoutName && isset($_GET['postType'])) {
+            $url = sprintf(
+                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
+                sanitize_text_field(wp_unslash($_GET['postType']))
+            );
+            wp_redirect($url);
+            exit;
+        }
+
+        if ($isEmptyLayoutName) {
+            $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
+            wp_redirect(esc_url($url));
+            exit;
+        }
     }
 }
