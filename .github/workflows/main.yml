@@ -15,7 +15,7 @@ jobs:
           ${{ runner.os }}-composer-
     - name: Install composer
       run: |
-        php8.1 $(which composer) install
+        php8.2 $(which composer) install
     - name: Run lint
       run: |
         composer php:lint
