@@ -117,8 +117,11 @@ final class FlexibleContentLayouts
         $fieldGroups = acf_get_field_groups();
 
         foreach ($fieldGroups as $fieldGroup) {
-            $fields = acf_get_fields($fieldGroup['key']);
+            if (!isset($fieldGroup['name'])) {
+                continue;
+            }
 
+            $fields = acf_get_fields($fieldGroup['key']);
             foreach ($fields as $field) {
                 if ($field['type'] === 'flexible_content') {
                     foreach ($field['layouts'] as $layout) {
