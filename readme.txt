@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 5.0
 Tested up to: 6.5
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -44,3 +44,6 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 = 2.0.0 =
 * Drop Cronjob
 * Tested with WordPress 6.5
+
+= 2.0.1 =
+* Prevent a php warning
