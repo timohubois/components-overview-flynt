@@ -2,7 +2,7 @@
 Contributors: timohubois
 Tags: flynt, components
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.6
 Stable tag: 2.0.1
 Requires PHP: 8.0
 License: GPLv3 or later
