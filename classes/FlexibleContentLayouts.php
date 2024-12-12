@@ -2,10 +2,6 @@
 
 namespace FlyntComponentsOverview;
 
-use WP_Query;
-
-use const Crontrol\TRANSIENT;
-
 defined('ABSPATH') || exit;
 
 final class FlexibleContentLayouts
