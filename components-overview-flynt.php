@@ -4,13 +4,12 @@
  * Plugin Name:       Components Overview for Flynt
  * Plugin URI:        https://github.com/timohubois/components-overview-flynt/
  * Description:       Get an overview of where components of the Flynt theme are currently used in flexible content acf fields.
- * Version:           2.0.2
+ * Version:           2.0.3
  * Requires at least: 5.0
  * Requires PHP:      8.0
  * Author:            Timo Hubois
  * Author URI:        https://pixelsaft.wtf
  * Text Domain:       components-overview-flynt
- * Requires Plugins:  advanced-custom-fields-pro
  * Domain Path:       /languages
  * License:           GPLv3 or later
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html

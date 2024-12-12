@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -52,3 +52,6 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 * Add Requires Plugins
 * Remove unused code
 * Tested up to: 6.7
+
+= 2.0.3 =
+* Remove Requires Plugins
