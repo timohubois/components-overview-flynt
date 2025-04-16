@@ -1,8 +1,8 @@
 === Components Overview for Flynt ===
 Contributors: timohubois
 Tags: flynt, components
-Requires at least: 5.0
-Tested up to: 6.7
+Requires at least: 6.0
+Tested up to: 6.8
 Stable tag: 2.0.3
 Requires PHP: 8.0
 License: GPLv3 or later
