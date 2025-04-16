@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - uses: actions/cache@v4
@@ -15,7 +15,7 @@ jobs:
           ${{ runner.os }}-composer-
     - name: Install composer
       run: |
-        php8.2 $(which composer) install
+        php8.3 $(which composer) install
     - name: Run lint
       run: |
         composer php:lint
