@@ -94,18 +94,45 @@ final class FlexibleContentLayouts
     {
         $postTypes = [];
         $acfFieldGroups = acf_get_field_groups();
+        $allPostTypes = get_post_types(['public' => true], 'names');
 
         foreach ($acfFieldGroups as $fieldGroup) {
-            foreach ($fieldGroup['location'] as $locationGroup) {
-                foreach ($locationGroup as $rule) {
-                    if ($rule['param'] === 'post_type' && $rule['operator'] === '==') {
-                        $postTypes[] = $rule['value'];
-                    }
+            if (!isset($fieldGroup['location'])) {
+                continue;
+            }
+            foreach ($allPostTypes as $postType) {
+                if ($this->fieldGroupAppliesToPostType($fieldGroup['location'], $postType)) {
+                    $postTypes[] = $postType;
                 }
             }
         }
-
         $this->postTypesWithLayouts = array_unique($postTypes) ?: [];
+    }
+
+    private function fieldGroupAppliesToPostType(array $location, string $postType): bool
+    {
+        foreach ($location as $group) { // OR between groups
+            $groupMatch = true;
+            foreach ($group as $rule) { // AND within group
+                if ($rule['param'] === 'post_type') {
+                    if ($rule['operator'] === '==') {
+                        if ($postType !== $rule['value']) {
+                            $groupMatch = false;
+                            break;
+                        }
+                    } elseif ($rule['operator'] === '!=') {
+                        if ($postType === $rule['value']) {
+                            $groupMatch = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if ($groupMatch) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function registerFieldGroups(): void
