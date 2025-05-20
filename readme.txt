@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.0
 Tested up to: 6.8
-Stable tag: 2.0.4
+Stable tag: 2.0.5
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -58,3 +58,6 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 
 = 2.0.4 =
 * Enhance post type filtering logic for field groups
+
+= 2.0.5 =
+* Add transient deletion for 'any' post type
