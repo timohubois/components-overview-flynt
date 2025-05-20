@@ -16,8 +16,8 @@ final class ListTableLayouts extends WP_List_Table
     {
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
-            'plural'    => __('Components Overview for Flynt', 'components-overview-flynt'),
-            'ajax'      => false
+            'plural' => __('Components Overview for Flynt', 'components-overview-flynt'),
+            'ajax' => false
         ]);
     }
 
