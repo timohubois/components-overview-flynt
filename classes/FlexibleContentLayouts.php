@@ -162,5 +162,7 @@ final class FlexibleContentLayouts
         foreach ($postTypes as $postType) {
             delete_transient(self::TRANSIENT_BASE_NAME . $postType);
         }
+
+        delete_transient(self::TRANSIENT_BASE_NAME . 'any');
     }
 }
