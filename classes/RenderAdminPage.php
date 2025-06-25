@@ -23,12 +23,12 @@ final class RenderAdminPage
             ); ?>
             <?php
             // Show search results subtitle (matches native WordPress behavior)
-            if (isset($_GET['s']) && strlen($_GET['s'])) {
+            if (isset($_GET['s']) && strlen(sanitize_text_field(wp_unslash($_GET['s'])))) {
                 echo '<span class="subtitle">';
                 printf(
                     /* translators: %s: Search query. */
-                    __('Search results for: %s', 'components-overview-flynt'),
-                    '<strong>' . esc_html($_GET['s']) . '</strong>'
+                    esc_html__('Search results for: %s', 'components-overview-flynt'),
+                    '<strong>' . esc_html(sanitize_text_field(wp_unslash($_GET['s']))) . '</strong>'
                 );
                 echo '</span>';
             }
@@ -75,12 +75,12 @@ final class RenderAdminPage
             ); ?>
             <?php
             // Show search results subtitle (matches native WordPress behavior)
-            if (isset($_GET['s']) && strlen($_GET['s'])) {
+            if (isset($_GET['s']) && strlen(sanitize_text_field(wp_unslash($_GET['s'])))) {
                 echo '<span class="subtitle">';
                 printf(
                     /* translators: %s: Search query. */
-                    __('Search results for: %s', 'components-overview-flynt'),
-                    '<strong>' . esc_html($_GET['s']) . '</strong>'
+                    esc_html__('Search results for: %s', 'components-overview-flynt'),
+                    '<strong>' . esc_html(sanitize_text_field(wp_unslash($_GET['s']))) . '</strong>'
                 );
                 echo '</span>';
             }
