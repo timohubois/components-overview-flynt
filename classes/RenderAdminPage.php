@@ -21,6 +21,18 @@ final class RenderAdminPage
                 esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache')),
                 esc_html__('Refresh cached Layouts', 'components-overview-flynt'),
             ); ?>
+            <?php
+            // Show search results subtitle (matches native WordPress behavior)
+            if (isset($_GET['s']) && strlen($_GET['s'])) {
+                echo '<span class="subtitle">';
+                printf(
+                    /* translators: %s: Search query. */
+                    __('Search results for: %s', 'components-overview-flynt'),
+                    '<strong>' . esc_html($_GET['s']) . '</strong>'
+                );
+                echo '</span>';
+            }
+            ?>
             <hr class="wp-header-end">
             <h2 class="screen-reader-text"><?php esc_html_e('Filter components list', 'components-overview-flynt') ?></h2>
             <form id="components-overview-flynt" method="get">
@@ -61,6 +73,18 @@ final class RenderAdminPage
                 esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
                 esc_html__('Back to Overview', 'components-overview-flynt'),
             ); ?>
+            <?php
+            // Show search results subtitle (matches native WordPress behavior)
+            if (isset($_GET['s']) && strlen($_GET['s'])) {
+                echo '<span class="subtitle">';
+                printf(
+                    /* translators: %s: Search query. */
+                    __('Search results for: %s', 'components-overview-flynt'),
+                    '<strong>' . esc_html($_GET['s']) . '</strong>'
+                );
+                echo '</span>';
+            }
+            ?>
             <hr class="wp-header-end">
             <h2 class="screen-reader-text"><?php esc_html_e('Filter posts list', 'components-overview-flynt') ?></h2>
             <form id="component-overview-flynt-posts" method="get">
