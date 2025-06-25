@@ -25,6 +25,13 @@ final class RenderAdminPage
             <h2 class="screen-reader-text"><?php esc_html_e('Filter components list', 'components-overview-flynt') ?></h2>
             <form id="components-overview-flynt" method="get">
                 <input type="hidden" name="page" value="<?php echo esc_html($inputPageValue) ?>" />
+                <?php
+                // Preserve postType filter when searching (matches native WordPress behavior)
+                $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : '';
+                if (!empty($currentPostType)) {
+                    echo '<input type="hidden" name="postType" value="' . esc_attr($currentPostType) . '" />';
+                }
+                ?>
                 <?php $listTableLayouts->views() ?>
                 <?php $listTableLayouts->search_box(esc_attr__('Search', 'components-overview-flynt'), 'search_id'); ?>
                 <?php $listTableLayouts->display() ?>

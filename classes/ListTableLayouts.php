@@ -129,12 +129,22 @@ final class ListTableLayouts extends WP_List_Table
         $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'any';
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
-        $layouts = $flexibleContentLayouts->getLayouts($currentPostType, $perPage, $pageNumber);
 
-        // Search
+        // Get all layouts first (without pagination)
+        $allLayouts = $flexibleContentLayouts->getLayouts($currentPostType);
+
+        // Search filtering - do this BEFORE pagination
         $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
         if (!empty($search)) {
-            $layouts = array_filter($layouts, static fn (array $item): bool => str_contains(strtolower($item['label']), strtolower($search)));
+            $allLayouts = array_filter($allLayouts, static function (array $item) use ($search): bool {
+                // Check both 'label' and 'name' fields for search, with fallback
+                $label = $item['label'] ?? $item['name'] ?? '';
+                $name = $item['name'] ?? '';
+                $searchLower = strtolower($search);
+
+                return str_contains(strtolower($label), $searchLower) ||
+                       str_contains(strtolower($name), $searchLower);
+            });
         }
 
         $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
@@ -143,21 +153,30 @@ final class ListTableLayouts extends WP_List_Table
         $orderby = empty($_GET['orderby']) ? '' : sanitize_text_field(wp_unslash($_GET['orderby']));
         $order = empty($_GET['order']) ? '' : sanitize_text_field(wp_unslash($_GET['order']));
         if ($orderby && $order) {
-            usort($layouts, function ($a, $b) use ($orderby, $order) {
+            usort($allLayouts, function ($a, $b) use ($orderby, $order) {
                 if ($orderby === 'layout') {
                     $orderby = 'label';
                 }
 
+                // Ensure the field exists before comparison
+                $aValue = $a[$orderby] ?? '';
+                $bValue = $b[$orderby] ?? '';
+
                 if ($order === 'asc') {
-                    return $a[$orderby] > $b[$orderby];
+                    return $aValue > $bValue ? 1 : ($aValue < $bValue ? -1 : 0);
                 } else {
-                    return $a[$orderby] < $b[$orderby];
+                    return $aValue < $bValue ? 1 : ($aValue > $bValue ? -1 : 0);
                 }
             });
         }
 
-        $totalItems = $search ? count($layouts) : count($flexibleContentLayouts->getLayouts($currentPostType));
+        // Calculate total items after search filtering
+        $totalItems = count($allLayouts);
         $totalPages = ceil($totalItems / $perPage);
+
+        // Apply pagination AFTER search and sorting
+        $offset = ($pageNumber - 1) * $perPage;
+        $layouts = array_slice($allLayouts, $offset, $perPage);
 
         $this->set_pagination_args([
             'total_items' => $totalItems,
