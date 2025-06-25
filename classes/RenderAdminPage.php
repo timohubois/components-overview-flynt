@@ -13,6 +13,7 @@ final class RenderAdminPage
         $listTableLayouts->prepare_items();
 
         $inputPageValue = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        $searchQuery = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Components Overview for Flynt', 'components-overview-flynt') ?></h1>
@@ -23,12 +24,12 @@ final class RenderAdminPage
             ); ?>
             <?php
             // Show search results subtitle (matches native WordPress behavior)
-            if (isset($_GET['s']) && strlen(sanitize_text_field(wp_unslash($_GET['s'])))) {
+            if (!empty($searchQuery)) {
                 echo '<span class="subtitle">';
                 printf(
                     /* translators: %s: Search query. */
                     esc_html__('Search results for: %s', 'components-overview-flynt'),
-                    '<strong>' . esc_html(sanitize_text_field(wp_unslash($_GET['s']))) . '</strong>'
+                    '<strong>' . esc_html($searchQuery) . '</strong>'
                 );
                 echo '</span>';
             }
@@ -60,6 +61,7 @@ final class RenderAdminPage
         $inputPageValue = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
         $inputPostTypeValue = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : '';
         $inputLayoutNameValue = isset($_GET['layoutName']) ? sanitize_text_field(wp_unslash($_GET['layoutName'])) : '';
+        $searchQuery = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
         $layouts = $flexibleContentLayouts->getLayouts();
@@ -75,12 +77,12 @@ final class RenderAdminPage
             ); ?>
             <?php
             // Show search results subtitle (matches native WordPress behavior)
-            if (isset($_GET['s']) && strlen(sanitize_text_field(wp_unslash($_GET['s'])))) {
+            if (!empty($searchQuery)) {
                 echo '<span class="subtitle">';
                 printf(
                     /* translators: %s: Search query. */
                     esc_html__('Search results for: %s', 'components-overview-flynt'),
-                    '<strong>' . esc_html(sanitize_text_field(wp_unslash($_GET['s']))) . '</strong>'
+                    '<strong>' . esc_html($searchQuery) . '</strong>'
                 );
                 echo '</span>';
             }
