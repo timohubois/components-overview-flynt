@@ -35,33 +35,33 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 3. Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Changelog ==
-= 1.0 =
-* Initial Release
-
-= 1.0.1 =
-* Fixed an issue in combination with screen_options
-
-= 2.0.0 =
-* Drop Cronjob
-* Tested with WordPress 6.5
-
-= 2.0.1 =
-* Prevent a php warning
-
-= 2.0.2 =
-* Add Requires Plugins
-* Remove unused code
-* Tested up to: 6.7
-
-= 2.0.3 =
-* Remove Requires Plugins
-
-= 2.0.4 =
-* Enhance post type filtering logic for field groups
-
 = 2.1.0 =
 * Add search results subtitle to enhance user experience
 * Improve search and pagination logic for layouts, preserving postType filter
 
 = 2.0.5 =
 * Add transient deletion for 'any' post type
+
+= 2.0.4 =
+* Enhance post type filtering logic for field groups
+
+= 2.0.3 =
+* Remove Requires Plugins
+
+= 2.0.2 =
+* Add Requires Plugins
+* Remove unused code
+* Tested up to: 6.7
+
+= 2.0.1 =
+* Prevent a php warning
+
+= 2.0.0 =
+* Drop Cronjob
+* Tested with WordPress 6.5
+
+= 1.0.1 =
+* Fixed an issue in combination with screen_options
+
+= 1.0 =
+* Initial Release
