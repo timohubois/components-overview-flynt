@@ -90,9 +90,9 @@ final class RenderAdminPage
             <hr class="wp-header-end">
             <h2 class="screen-reader-text"><?php esc_html_e('Filter posts list', 'components-overview-flynt') ?></h2>
             <form id="component-overview-flynt-posts" method="get">
-                <input type="hidden" name="page" value="<?php echo esc_html($inputPageValue) ?>" />
-                <input type="hidden" name="postType" value="<?php esc_html($inputPostTypeValue) ?>" />
-                <input type="hidden" name="layoutName" value="<?php echo esc_html($inputLayoutNameValue) ?>" />
+                <input type="hidden" name="page" value="<?php echo esc_attr($inputPageValue) ?>" />
+                <input type="hidden" name="postType" value="<?php echo esc_attr($inputPostTypeValue) ?>" />
+                <input type="hidden" name="layoutName" value="<?php echo esc_attr($inputLayoutNameValue) ?>" />
                 <?php $listTablePostsWithLayout->views() ?>
                 <?php $listTablePostsWithLayout->search_box(esc_attr__('Search', 'components-overview-flynt'), 'search_posts'); ?>
                 <?php $listTablePostsWithLayout->display() ?>
