@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.0
 Tested up to: 6.8
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -35,6 +35,10 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 3. Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Changelog ==
+= 2.1.1 =
+* Fix escaping in RenderAdminPage.php to use esc_attr for HTML attributes
+* Streamline search query handling for improved readability
+
 = 2.1.0 =
 * Add search results subtitle to enhance user experience
 * Improve search and pagination logic for layouts, preserving postType filter
