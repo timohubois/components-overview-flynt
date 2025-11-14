@@ -35,9 +35,10 @@ final class ListTablePostsWithLayout extends WP_List_Table
         $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : null;
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
+        $fieldGroups = $flexibleContentLayouts->getFieldGroupLayouts();
         $postsWithLayout = new PostsWithLayout();
 
-        $count = $postsWithLayout->getCount($layoutName, null, 'any', $search);
+        $count = $postsWithLayout->getCount($layoutName, $fieldGroups, 'any', $search);
         $href = sprintf(
             admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s'),
             $layoutName
@@ -54,7 +55,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
         $postTypesWithLayouts = $flexibleContentLayouts->getPostTypesWithLayouts();
         foreach ($postTypesWithLayouts as $postType) {
             $postTypeObject = get_post_type_object($postType);
-            $count = $postsWithLayout->getCount($layoutName, null, $postType, $search);
+            $count = $postsWithLayout->getCount($layoutName, $fieldGroups, $postType, $search);
             if ($count === 0) {
                 continue;
             }
@@ -154,49 +155,26 @@ final class ListTablePostsWithLayout extends WP_List_Table
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
         $fieldGroups = $flexibleContentLayouts->getFieldGroupLayouts();
-        $data = [];
-        $totalItems = 0;
-        foreach ($fieldGroups as $fieldGroup => $layouts) {
-            $postsWithLayout = new PostsWithLayout();
-            $wpQuery = $postsWithLayout->get(
-                $layoutName,
-                $fieldGroup,
-                $postType,
-                $perPage,
-                $pageNumber,
-                $orderby,
-                $order,
-                $search
-            );
 
-            $posts = $wpQuery->posts;
+        // Use single query with OR meta_query instead of multiple queries
+        $postsWithLayout = new PostsWithLayout();
+        $wpQuery = $postsWithLayout->get(
+            $layoutName,
+            $fieldGroups,
+            $postType,
+            $perPage,
+            $pageNumber,
+            $orderby,
+            $order,
+            $search
+        );
 
-            $data = [
-                ...$data,
-                ...$posts
-            ];
-
-            $totalItems += $wpQuery->found_posts;
-        }
-
-        usort($data, function ($a, $b) use ($orderby, $order) {
-            if ($a->$orderby == $b->$orderby) {
-                return 0;
-            }
-
-            if ($order === 'asc') {
-                return ($a->$orderby < $b->$orderby) ? -1 : 1;
-            } else {
-                return ($a->$orderby < $b->$orderby) ? 1 : -1;
-            }
-        });
-
-        $this->items = $data ?? [];
+        $this->items = $wpQuery->posts ?? [];
 
         $this->set_pagination_args([
-            'total_items' => $totalItems,
+            'total_items' => $wpQuery->found_posts,
             'per_page'    => $perPage,
-            'total_pages' => ceil($totalItems / $perPage)
+            'total_pages' => ceil($wpQuery->found_posts / $perPage)
         ]);
     }
 }

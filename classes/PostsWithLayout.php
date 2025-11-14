@@ -10,7 +10,7 @@ final class PostsWithLayout
 {
     public function get(
         string $layoutName,
-        string $fieldGroup,
+        array $fieldGroups,
         string $postType = 'any',
         int $postsPerPage = 20,
         int $page = 1,
@@ -21,18 +21,22 @@ final class PostsWithLayout
 
         $offset = ($page - 1) * $postsPerPage;
 
+        // Build OR meta_query for all field groups
+        $metaQuery = ['relation' => 'OR'];
+        foreach ($fieldGroups as $fieldGroup => $layouts) {
+            $metaQuery[] = [
+                'key' => $fieldGroup,
+                'value' => serialize(strval($layoutName)),
+                'compare' => 'LIKE'
+            ];
+        }
+
         $args = [
             'post_type' => $this->getPostTypes($postType),
             'posts_per_page' => $postsPerPage,
             'offset' => $offset,
             'paged' => $page,
-            'meta_query' => [
-                [
-                    'key' => $fieldGroup,
-                    'value' => serialize(strval($layoutName)),
-                    'compare' => 'LIKE'
-                ]
-            ],
+            'meta_query' => $metaQuery,
             'orderby' => $orderby,
             'order' => $order,
             's' => $search
@@ -43,43 +47,25 @@ final class PostsWithLayout
 
     public function getCount(
         string $layoutName,
-        ?string $fieldGroup,
+        array $fieldGroups,
         string $postType,
-        ?string $search,
+        ?string $search
     ): int {
-        $count = 0;
-
-        if ($fieldGroup === null) {
-            $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
-            $fieldGroups = $flexibleContentLayouts->getFieldGroupLayouts();
-
-            foreach ($fieldGroups as $fieldGroup => $layouts) {
-                $count += $this->getCountForFieldGroup($layoutName, $fieldGroup, $postType, $search);
-            }
-        } else {
-            $count = $this->getCountForFieldGroup($layoutName, $fieldGroup, $postType, $search);
+        // Build OR meta_query for all field groups
+        $metaQuery = ['relation' => 'OR'];
+        foreach ($fieldGroups as $fieldGroup => $layouts) {
+            $metaQuery[] = [
+                'key' => $fieldGroup,
+                'value' => serialize(strval($layoutName)),
+                'compare' => 'LIKE'
+            ];
         }
 
-        return $count;
-    }
-
-    private function getCountForFieldGroup(
-        string $layoutName,
-        string $fieldGroup,
-        string $postType,
-        ?string $search,
-    ): int {
         $args = [
             'post_type' => $this->getPostTypes($postType),
             'posts_per_page' => 1,
             'fields' => 'ids',
-            'meta_query' => [
-                [
-                    'key' => $fieldGroup,
-                    'value' => serialize(strval($layoutName)),
-                    'compare' => 'LIKE'
-                ]
-            ],
+            'meta_query' => $metaQuery,
             's' => $search
         ];
 

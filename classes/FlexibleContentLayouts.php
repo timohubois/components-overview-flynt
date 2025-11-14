@@ -51,7 +51,8 @@ final class FlexibleContentLayouts
         foreach ($fieldGroupsLayouts as $fieldGroup => $layouts) {
             foreach ($layouts as $layout) {
                 $postsWithLayout = new PostsWithLayout();
-                $count = $postsWithLayout->getCount($layout['name'], $fieldGroup, $postType, null);
+                // Pass single field group as array
+                $count = $postsWithLayout->getCount($layout['name'], [$fieldGroup => $layouts], $postType, null);
 
                 if ($count > 0) {
                     $postTypeLayouts[$layout['name']] = $layout;
