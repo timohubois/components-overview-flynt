@@ -4,7 +4,7 @@
  * Plugin Name:       Components Overview for Flynt
  * Plugin URI:        https://github.com/timohubois/components-overview-flynt/
  * Description:       Get an overview of where components of the Flynt theme are currently used in flexible content acf fields.
- * Version:           2.1.1
+ * Version:           2.2.0
  * Requires at least: 5.0
  * Requires PHP:      8.0
  * Author:            Timo Hubois
