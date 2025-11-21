@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.0
 Tested up to: 6.8
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -35,6 +35,9 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 3. Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Changelog ==
+= 2.2.1 =
+* Fix pagination buttons remaining enabled on last page by ensuring proper integer type casting
+
 = 2.2.0 =
 * Optimize database query performance by consolidating multiple queries into single OR meta_query
 * Improve page load times when displaying posts with layouts
