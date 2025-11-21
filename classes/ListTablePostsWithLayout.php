@@ -172,9 +172,9 @@ final class ListTablePostsWithLayout extends WP_List_Table
         $this->items = $wpQuery->posts ?? [];
 
         $this->set_pagination_args([
-            'total_items' => $wpQuery->found_posts,
-            'per_page'    => $perPage,
-            'total_pages' => ceil($wpQuery->found_posts / $perPage)
+            'total_items' => (int) $wpQuery->found_posts,
+            'per_page'    => (int) $perPage,
+            'total_pages' => (int) ceil($wpQuery->found_posts / $perPage),
         ]);
     }
 }

@@ -172,16 +172,15 @@ final class ListTableLayouts extends WP_List_Table
 
         // Calculate total items after search filtering
         $totalItems = count($allLayouts);
-        $totalPages = ceil($totalItems / $perPage);
 
         // Apply pagination AFTER search and sorting
         $offset = ($pageNumber - 1) * $perPage;
         $layouts = array_slice($allLayouts, $offset, $perPage);
 
         $this->set_pagination_args([
-            'total_items' => $totalItems,
-            'per_page' => $perPage,
-            'total_pages' => $totalPages,
+            'total_items' => (int) $totalItems,
+            'per_page' => (int) $perPage,
+            'total_pages' => (int) ceil($totalItems / $perPage),
         ]);
 
         $this->items = $layouts;
