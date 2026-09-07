@@ -13,9 +13,15 @@ Components Overview for Flynt is a plugin to get an overview of where components
 
 ## Development
 
+Use PHP 8.3 for development and CI. The released plugin still supports PHP 8.0;
+Composer development dependencies are not included in the release.
+
 1. Perform [Installation](#installation).
-2. Make sure you have the correct [requirements](#requirements).
-3. Run `composer i` to install composer dependency.
+2. Ensure `php --version` reports PHP 8.3 and Composer uses that PHP installation.
+3. Run `composer install` to install development dependencies.
+4. Run `composer check-platform-reqs` and `composer php:lint`.
+
+Keep plugin code compatible with PHP 8.0 when using newer development tools.
 
 ## License
 

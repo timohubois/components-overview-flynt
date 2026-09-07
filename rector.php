@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\CodeQuality\Rector\Array_\CallableThisArrayToAnonymousFunctionRector;
+use Rector\ValueObject\PhpVersion;
 use Rector\Arguments\Rector\MethodCall\RemoveMethodCallParamRector;
 use Rector\Arguments\Rector\ClassMethod\ReplaceArgumentDefaultValueRector;
 
 return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->phpVersion(PhpVersion::PHP_80);
+
     $rectorConfig->autoloadPaths([
         __DIR__ . '/vendor/squizlabs/php_codesniffer/autoload.php',
         __DIR__ . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php',
@@ -32,10 +34,6 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::INSTANCEOF,
         SetList::NAMING,
         SetList::TYPE_DECLARATION
-    ]);
-
-    $rectorConfig->skip([
-        CallableThisArrayToAnonymousFunctionRector::class,
     ]);
 
     $rectorConfig->rule(RemoveMethodCallParamRector::class);

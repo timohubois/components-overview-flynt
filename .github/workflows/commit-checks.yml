@@ -7,15 +7,22 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
+    - name: Set up PHP 8.3
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        tools: composer:v2
+        coverage: none
     - uses: actions/cache@v4
       with:
         path: vendor
-        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        key: ${{ runner.os }}-php8.3-composer-${{ hashFiles('composer.lock') }}
         restore-keys: |
-          ${{ runner.os }}-composer-
-    - name: Install composer
+          ${{ runner.os }}-php8.3-composer-
+    - name: Install dependencies
       run: |
-        php8.3 $(which composer) install
+        composer install --no-interaction --prefer-dist
+        composer check-platform-reqs
     - name: Run lint
       run: |
         composer php:lint
