@@ -1,9 +1,9 @@
 === Components Overview for Flynt ===
 Contributors: timohubois
 Tags: flynt, components
-Requires at least: 6.0
+Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -35,6 +35,9 @@ Check out the Plugin [GitHub Repository](https://github.com/timohubois/component
 3. Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Changelog ==
+= 2.2.3 =
+* Raise the minimum supported WordPress version to 6.5.
+
 = 2.2.2 =
 * Update the WordPress compatibility declaration to 7.1.
 
