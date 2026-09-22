@@ -19,7 +19,12 @@ final class RenderAdminPage
             <h1 class="wp-heading-inline"><?php esc_html_e('Components Overview for Flynt', 'components-overview-flynt') ?></h1>
             <?php printf(
                 '<a href="%s" class="page-title-action">%s</a>',
-                esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache')),
+                esc_url(
+                    wp_nonce_url(
+                        admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache'),
+                        'components_overview_refresh_layout_cache'
+                    )
+                ),
                 esc_html__('Refresh cached Layouts', 'components-overview-flynt'),
             ); ?>
             <?php

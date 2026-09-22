@@ -90,7 +90,7 @@ final class ListTableLayouts extends WP_List_Table
                     '<a class="row-title" href="%s" aria-label="%s">%s</a>',
                     esc_url($href),
                     /* translators: %s: Post title. */
-                    esc_attr(sprintf(__('&#8220;%s&#8221; (Edit)'), $title)),
+                    esc_attr(sprintf(__('&#8220;%s&#8221; (Edit)', 'components-overview-flynt'), $title)),
                     wp_kses_post($title)
                 );
                 echo "</strong>\n";
@@ -99,7 +99,7 @@ final class ListTableLayouts extends WP_List_Table
             case 'name':
                 return $item['name'];
             default:
-                return print_r($item, true);
+                return '';
         }
     }
 

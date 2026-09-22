@@ -86,8 +86,16 @@ final class ListTablePostsWithLayout extends WP_List_Table
         switch ($column_name) {
             case 'post_title':
                 $actions = [
-                    'edit' => sprintf('<a href="%s">%s</a>', get_edit_post_link($item), __('Edit')),
-                    'view' => sprintf('<a href="%s">%s</a>', get_permalink($item), __('View')),
+                    'edit' => sprintf(
+                        '<a href="%s">%s</a>',
+                        get_edit_post_link($item),
+                        __('Edit', 'components-overview-flynt')
+                    ),
+                    'view' => sprintf(
+                        '<a href="%s">%s</a>',
+                        get_permalink($item),
+                        __('View', 'components-overview-flynt')
+                    ),
                 ];
 
                 $title = $item->post_title;
@@ -96,7 +104,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
                     '<a class="row-title" href="%s" aria-label="%s">%s</a>',
                     esc_url(get_edit_post_link($item)),
                     /* translators: %s: Post title. */
-                    esc_attr(sprintf(__('&#8220;%s&#8221; (Edit)'), $title)),
+                    esc_attr(sprintf(__('&#8220;%s&#8221; (Edit)', 'components-overview-flynt'), $title)),
                     esc_attr($title)
                 );
                 _post_states($item);
@@ -110,7 +118,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
             case 'post_date':
                 return $wpPostsListTable->column_date($item);
             default:
-                return print_r($item, true);
+                return '';
         }
     }
 
