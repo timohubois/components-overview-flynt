@@ -19,7 +19,7 @@ final class AdminMenu
         $menuPage = add_menu_page(
             __('Components Overview for Flynt', 'components-overview-flynt'),
             __('Components Overview for Flynt', 'components-overview-flynt'),
-            'administrator',
+            'manage_options',
             self::MENU_SLUG,
             [self::class, 'renderAdminPage'],
             'dashicons-info-outline',
@@ -34,7 +34,7 @@ final class AdminMenu
     {
         $option = 'per_page';
         $args = [
-            'label' => __('Number of items per page'),
+            'label' => __('Number of items per page', 'components-overview-flynt'),
             'default' => 20,
             'option' => 'components_overview_posts_per_page'
         ];
@@ -62,13 +62,14 @@ final class AdminMenu
 
     public static function maybeRedirect(): void
     {
-        $shouldRefreshLayoutCache = isset($_GET['action']) && $_GET['action'] === 'refreshLayoutCache';
-        if ($shouldRefreshLayoutCache) {
+        $action = isset($_GET['action']) ? sanitize_key(wp_unslash($_GET['action'])) : '';
+        if ($action === 'refreshLayoutCache') {
+            check_admin_referer('components_overview_refresh_layout_cache');
+
             $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
             $flexibleContentLayouts->deleteTransients();
 
-            $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
-            wp_redirect(esc_url($url));
+            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
             exit;
         }
 
@@ -78,13 +79,12 @@ final class AdminMenu
                 admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
                 sanitize_text_field(wp_unslash($_GET['postType']))
             );
-            wp_redirect($url);
+            wp_safe_redirect($url);
             exit;
         }
 
         if ($isEmptyLayoutName) {
-            $url = esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
-            wp_redirect(esc_url($url));
+            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
             exit;
         }
     }

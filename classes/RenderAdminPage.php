@@ -14,12 +14,16 @@ final class RenderAdminPage
 
         $inputPageValue = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
         $searchQuery = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $refreshLayoutCacheUrl = wp_nonce_url(
+            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache'),
+            'components_overview_refresh_layout_cache'
+        );
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Components Overview for Flynt', 'components-overview-flynt') ?></h1>
             <?php printf(
                 '<a href="%s" class="page-title-action">%s</a>',
-                esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache')),
+                esc_url($refreshLayoutCacheUrl),
                 esc_html__('Refresh cached Layouts', 'components-overview-flynt'),
             ); ?>
             <?php

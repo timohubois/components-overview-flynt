@@ -2,18 +2,21 @@ name: Commit Checks
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set up PHP 8.3
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
       with:
         php-version: '8.3'
         tools: composer:v2
         coverage: none
-    - uses: actions/cache@v4
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: vendor
         key: ${{ runner.os }}-php8.3-composer-${{ hashFiles('composer.lock') }}
@@ -24,5 +27,16 @@ jobs:
         composer install --no-interaction --prefer-dist
         composer check-platform-reqs
     - name: Run lint
+      run: composer php:lint
+
+  plugin-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Prepare plugin package
       run: |
-        composer php:lint
+        mkdir -p "${RUNNER_TEMP}/components-overview-flynt"
+        rsync -a --exclude-from=.distignore ./ "${RUNNER_TEMP}/components-overview-flynt/"
+    - uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+      with:
+        build-dir: ${{ runner.temp }}/components-overview-flynt
