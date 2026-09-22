@@ -63,7 +63,7 @@ final class AdminMenu
     public static function maybeRedirect(): void
     {
         $action = isset($_GET['action']) ? sanitize_key(wp_unslash($_GET['action'])) : '';
-        if ($action === 'refreshLayoutCache') {
+        if ($action === 'refreshlayoutcache') {
             check_admin_referer('components_overview_refresh_layout_cache');
 
             $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
