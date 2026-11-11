@@ -23,10 +23,6 @@ Composer development dependencies are not included in the release.
 
 Keep plugin code compatible with PHP 8.0 when using newer development tools.
 
-## WordPress.org listing artwork
-
-Listing assets live in `.wordpress-org/` and are excluded from plugin ZIPs. The selected Blueprint Finder banners and icon use lossless PNG, alongside two genuine interface screenshots. File sizes and dimensions follow the [WordPress.org asset requirements](https://developer.wordpress.org/plugins/wordpress-org/plugin-assets/).
-
 ## License
 
 GPLv3
