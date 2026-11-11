@@ -3,4 +3,23 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+      time: '07:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: monthly
+      time: '07:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 3
+    groups:
+      development-tools:
+        dependency-type: development
+        update-types: [minor, patch]
