@@ -24,6 +24,7 @@ jobs:
           ${{ runner.os }}-php8.3-composer-
     - name: Install dependencies
       run: |
+        composer validate --strict
         composer install --no-interaction --prefer-dist
         composer check-platform-reqs
     - name: Run lint
