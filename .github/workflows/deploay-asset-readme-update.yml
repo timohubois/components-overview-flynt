@@ -1,14 +1,13 @@
-name: Plugin asset/readme update
+name: Publish listing assets and readme
 on:
-  push:
-    branches:
-    - trunk
+  workflow_dispatch:
 permissions:
   contents: read
 
 jobs:
-  trunk:
-    name: Push to trunk
+  publish:
+    name: Publish WordPress.org listing
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
     - name: Install Subversion
