@@ -75,6 +75,7 @@ final class PostsWithLayout
             'post_type' => $this->getPostTypes($postType),
             'posts_per_page' => 1,
             'fields' => 'ids',
+            'orderby' => 'none',
             'meta_query' => $metaQuery,
             's' => $search
         ];
