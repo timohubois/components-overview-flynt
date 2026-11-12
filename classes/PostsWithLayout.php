@@ -84,6 +84,36 @@ final class PostsWithLayout
         return $query->found_posts;
     }
 
+    public function getQueryContext(string $postType): string
+    {
+        global $wpdb;
+
+        $query = new WP_Query();
+        // Let WordPress apply its query filters, but do not execute or cache this context-only query.
+        $skipQuery = static function ($posts, WP_Query $currentQuery) use ($query) {
+            if ($currentQuery !== $query) {
+                return $posts;
+            }
+            $currentQuery->set('cache_results', false);
+            return [];
+        };
+        add_filter('posts_pre_query', $skipQuery, PHP_INT_MAX, 2);
+        try {
+            $query->query([
+                'post_type' => $this->getPostTypes($postType),
+                'posts_per_page' => 1,
+                'fields' => 'ids',
+                'orderby' => 'none',
+                'no_found_rows' => true,
+                'cache_results' => false,
+            ]);
+        } finally {
+            remove_filter('posts_pre_query', $skipQuery, PHP_INT_MAX);
+        }
+
+        return $wpdb->remove_placeholder_escape($query->request);
+    }
+
     private function getPostTypes(string $postType): array
     {
         if ($postType === 'any') {
