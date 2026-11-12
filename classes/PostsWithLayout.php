@@ -36,6 +36,7 @@ final class PostsWithLayout
             'posts_per_page' => $postsPerPage,
             'offset' => $offset,
             'paged' => $page,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required serialized ACF layout lookup.
             'meta_query' => $metaQuery,
             'orderby' => in_array($orderby, ['post_date', 'post_title', 'post_type'], true)
                 ? [$orderby => $order, 'ID' => $order]
@@ -78,6 +79,7 @@ final class PostsWithLayout
             'posts_per_page' => 1,
             'fields' => 'ids',
             'orderby' => 'none',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required serialized ACF layout count.
             'meta_query' => $metaQuery,
             's' => $search
         ];
