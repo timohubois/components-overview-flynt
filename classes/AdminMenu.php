@@ -48,10 +48,21 @@ final class AdminMenu
 
     public static function renderAdminPage(): void
     {
-        $isLayoutName = isset($_GET['layoutName']);
+        if (!current_user_can('manage_options')) {
+            wp_die(
+                esc_html__('You are not allowed to access this page.', 'components-overview-flynt'),
+                '',
+                ['response' => 403]
+            );
+            return;
+        }
 
-        if ($isLayoutName) {
-            $layoutName = sanitize_text_field(wp_unslash($_GET['layoutName']));
+        if (isset($_GET['layoutName'])) {
+            $layoutName = is_string($_GET['layoutName'])
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Exact catalog key.
+                ? wp_unslash($_GET['layoutName'])
+                : '';
+            // Validate the exact name against the layout catalog in the renderer.
             RenderAdminPage::postsWithLayout($layoutName);
         } else {
             RenderAdminPage::layoutsOverview();
@@ -62,7 +73,18 @@ final class AdminMenu
 
     public static function maybeRedirect(): void
     {
-        $action = isset($_GET['action']) ? sanitize_key(wp_unslash($_GET['action'])) : '';
+        if (!current_user_can('manage_options')) {
+            wp_die(
+                esc_html__('You are not allowed to access this page.', 'components-overview-flynt'),
+                '',
+                ['response' => 403]
+            );
+            return;
+        }
+
+        $action = isset($_GET['action']) && is_string($_GET['action'])
+            ? sanitize_key(wp_unslash($_GET['action']))
+            : '';
         if ($action === 'refreshlayoutcache') {
             check_admin_referer('components_overview_refresh_layout_cache');
 
@@ -73,19 +95,20 @@ final class AdminMenu
             exit;
         }
 
-        $isEmptyLayoutName = isset($_GET['layoutName']) && empty($_GET['layoutName']);
-        if ($isEmptyLayoutName && isset($_GET['postType'])) {
-            $url = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
-                sanitize_text_field(wp_unslash($_GET['postType']))
-            );
-            wp_safe_redirect($url);
-            exit;
+        $isEmptyLayoutName = isset($_GET['layoutName']) && $_GET['layoutName'] === '';
+        if (!$isEmptyLayoutName) {
+            return;
         }
 
-        if ($isEmptyLayoutName) {
-            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
-            exit;
+        $url = admin_url('admin.php?page=' . self::MENU_SLUG);
+        if (isset($_GET['postType']) && is_string($_GET['postType'])) {
+            $postType = sanitize_text_field(wp_unslash($_GET['postType']));
+            if ($postType === 'any' || post_type_exists($postType)) {
+                $url = add_query_arg('postType', $postType, $url);
+            }
         }
+
+        wp_safe_redirect($url);
+        exit;
     }
 }
