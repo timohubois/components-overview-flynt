@@ -21,7 +21,7 @@ final class ListTableLayouts extends WP_List_Table
         ]);
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_views()
     {
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
@@ -57,7 +57,7 @@ final class ListTableLayouts extends WP_List_Table
         return $views;
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
         $href = sprintf(
@@ -103,7 +103,7 @@ final class ListTableLayouts extends WP_List_Table
         }
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_columns()
     {
         $columns = [
@@ -113,7 +113,7 @@ final class ListTableLayouts extends WP_List_Table
         return $columns;
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_sortable_columns()
     {
         return [
@@ -121,7 +121,7 @@ final class ListTableLayouts extends WP_List_Table
         ];
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function prepare_items(): void
     {
         $perPage = $this->get_items_per_page('components_overview_posts_per_page');
