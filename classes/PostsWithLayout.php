@@ -42,6 +42,12 @@ final class PostsWithLayout
             's' => $search
         ];
 
+        // WordPress ignores an empty meta_query; do not turn it into an unfiltered posts query.
+        if ($fieldGroups === []) {
+            $args['post__in'] = [0];
+            $args['no_found_rows'] = true;
+        }
+
         return new WP_Query($args);
     }
 
@@ -51,6 +57,10 @@ final class PostsWithLayout
         string $postType,
         ?string $search
     ): int {
+        if ($fieldGroups === []) {
+            return 0;
+        }
+
         // Build OR meta_query for all field groups
         $metaQuery = ['relation' => 'OR'];
         foreach ($fieldGroups as $fieldGroup => $layouts) {
