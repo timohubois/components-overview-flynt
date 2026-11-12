@@ -54,13 +54,11 @@ Only layouts with matching saved content are listed. The layout list for each po
 
 After adding or removing component usage or changing field definitions, use **Refresh cached Layouts** at the top of the overview. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
 
-= Does the overview follow language filters? =
+= Has language filtering been tested? =
 
-When another plugin applies language filters to WordPress queries, the overview follows the selected language. Navigation, search and cache refresh retain the current view context, and layout caches are kept separate for filtered query contexts. A multilingual plugin is not required.
+Language filtering has been tested with WPML, including individual languages and All languages, across both admin screens, navigation, search and cache refreshes.
 
-= Why does a saved listing link show an expired-link message? =
-
-Listing, filtering and search URLs use WordPress security nonces. They are tied to your login session and can expire. Open **Components Overview for Flynt** from the WordPress admin menu to generate a fresh link, then select the component again. Old saved listing URLs without a nonce are no longer accepted.
+WPML is not required; the plugin was also tested without a multilingual plugin. Compatibility with other multilingual plugins has not been verified.
 
 = Can I use this to prove a component is unused and delete it? =
 
