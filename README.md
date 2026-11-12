@@ -1,28 +1,38 @@
 # Components Overview for Flynt
 
-Components Overview for Flynt is a plugin to get an overview of where components of the [Flynt WordPress theme](https://github.com/flyntwp/flynt) are currently used in acf flexible content fields.
+Components Overview for Flynt shows where components of the [Flynt WordPress theme](https://github.com/flyntwp/flynt) are used in ACF flexible content fields. Open a component layout to see the posts that use it.
 
 ## Requirements
 
-- PHP >= 8.0
+- WordPress 6.5 or later.
+- PHP 8.0 or later.
+- An active Flynt-based theme with ACF flexible content fields and the ACF functionality required by that theme.
+- An account with the `manage_options` capability to access the overview.
 
 ## Installation
 
-1. Clone the repository and place it in `wp-content/plugins/` folder.
-2. Make sure you have the correct [requirements](#requirements).
+1. Clone this repository into `wp-content/plugins/components-overview-flynt/`.
+2. Activate **Components Overview for Flynt** under **Plugins**.
+3. Open **Components Overview for Flynt** in the WordPress admin menu.
+
+Composer is not required to run the plugin.
+
+## Usage
+
+Use the post-type filters and search to find a layout, then open it to see matching posts. After changing layouts or content, use **Refresh cached Layouts** if the overview is out of date. The overview reads registered ACF flexible content layouts and saved post data; layout lists are cached for up to one week.
 
 ## Development
 
-Use PHP 8.3 for development and CI. The released plugin still supports PHP 8.0;
-Composer development dependencies are not included in the release.
+Use PHP 8.3 for development and CI. The released plugin supports PHP 8.0; keep plugin code compatible with that version. Composer development dependencies are not included in the release.
 
-1. Perform [Installation](#installation).
-2. Ensure `php --version` reports PHP 8.3 and Composer uses that PHP installation.
-3. Run `composer install` to install development dependencies.
-4. Run `composer check-platform-reqs` and `composer php:lint`.
+After installation, ensure `php --version` reports PHP 8.3 and Composer uses that PHP installation, then run:
 
-Keep plugin code compatible with PHP 8.0 when using newer development tools.
+```sh
+composer install
+composer check-platform-reqs
+composer php:lint
+```
 
 ## License
 
-GPLv3
+GPLv3 or later. See [LICENSE](LICENSE).
