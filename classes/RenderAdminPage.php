@@ -16,7 +16,7 @@ final class RenderAdminPage
         $searchQuery = $listTableLayouts->getSearchQuery();
         $currentPostType = $listTableLayouts->getPostTypeFilter();
         $refreshLayoutCacheUrl = wp_nonce_url(
-            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&action=refreshLayoutCache'),
+            AdminMenu::getViewUrl(['action' => 'refreshLayoutCache']),
             'components_overview_refresh_layout_cache'
         );
         ?>
@@ -49,6 +49,7 @@ final class RenderAdminPage
                 <input type="hidden" name="page" value="<?php echo esc_attr($inputPageValue) ?>" />
                 <?php
                 wp_nonce_field(AdminMenu::VIEW_NONCE_ACTION, AdminMenu::VIEW_NONCE_NAME, false);
+                self::viewContextFields();
                 // Preserve postType filter when searching (matches native WordPress behavior)
                 if ($currentPostType !== '') {
                     echo '<input type="hidden" name="postType" value="' . esc_attr($currentPostType) . '" />';
@@ -112,7 +113,10 @@ final class RenderAdminPage
                 <input type="hidden" name="page" value="<?php echo esc_attr($inputPageValue) ?>" />
                 <input type="hidden" name="postType" value="<?php echo esc_attr($inputPostTypeValue) ?>" />
                 <input type="hidden" name="layoutName" value="<?php echo esc_attr($inputLayoutNameValue) ?>" />
-                <?php wp_nonce_field(AdminMenu::VIEW_NONCE_ACTION, AdminMenu::VIEW_NONCE_NAME, false); ?>
+                <?php
+                wp_nonce_field(AdminMenu::VIEW_NONCE_ACTION, AdminMenu::VIEW_NONCE_NAME, false);
+                self::viewContextFields();
+                ?>
                 <?php $listTablePostsWithLayout->views() ?>
                 <?php $listTablePostsWithLayout->search_box(
                     esc_attr__('Search', 'components-overview-flynt'),
@@ -122,6 +126,13 @@ final class RenderAdminPage
             </form>
         </div>
         <?php
+    }
+
+    private static function viewContextFields(): void
+    {
+        foreach (AdminMenu::getViewContext() as $name => $value) {
+            printf('<input type="hidden" name="%s" value="%s" />', esc_attr($name), esc_attr($value));
+        }
     }
 
     private static function layoutNotFound(): void

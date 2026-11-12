@@ -18,10 +18,40 @@ final class AdminMenu
 
     public static function getViewUrl(array $args = []): string
     {
-        $args = ['page' => self::MENU_SLUG] + $args;
+        $args = ['page' => self::MENU_SLUG] + $args + self::getViewContext();
         $args[self::VIEW_NONCE_NAME] = wp_create_nonce(self::VIEW_NONCE_ACTION);
 
-        return add_query_arg($args, admin_url('admin.php'));
+        return add_query_arg(
+            map_deep($args, static fn($value) => is_string($value) ? urlencode($value) : $value),
+            admin_url('admin.php')
+        );
+    }
+
+    public static function getViewContext(): array
+    {
+        $context = [];
+        wp_parse_str((string) wp_parse_url(add_query_arg([]), PHP_URL_QUERY), $context);
+        if (($context['page'] ?? '') !== self::MENU_SLUG) {
+            return [];
+        }
+
+        $remove = array_merge(wp_removable_query_args(), [
+            'page', 'layoutName', 'postType', 's', 'paged', 'orderby', 'order',
+            'action', 'action2', '_wpnonce', '_wp_http_referer', '_wp_original_http_referer',
+            'redirect_to', self::VIEW_NONCE_NAME,
+        ]);
+        $context = array_diff_key($context, array_flip($remove));
+        foreach ($context as $name => $value) {
+            if (
+                !is_string($value)
+                || !preg_match('/^[a-z0-9_-]+$/iD', (string) $name)
+                || preg_match('/(?:^|_)nonce$/i', (string) $name)
+            ) {
+                unset($context[$name]);
+            }
+        }
+
+        return $context;
     }
 
     public static function addAdminMenu(): void
