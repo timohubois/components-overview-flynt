@@ -37,7 +37,9 @@ final class PostsWithLayout
             'offset' => $offset,
             'paged' => $page,
             'meta_query' => $metaQuery,
-            'orderby' => $orderby,
+            'orderby' => in_array($orderby, ['post_date', 'post_title', 'post_type'], true)
+                ? [$orderby => $order, 'ID' => $order]
+                : $orderby,
             'order' => $order,
             's' => $search
         ];
