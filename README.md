@@ -21,6 +21,10 @@ Composer is not required to run the plugin.
 
 Use the post-type filters and search to find a layout, then open it to see matching posts. After changing layouts or content, use **Refresh cached Layouts** if the overview is out of date. The overview reads registered ACF flexible content layouts and saved post data; layout lists are cached for up to one week.
 
+Both admin screens follow normal WordPress query filters, including language filters provided by other plugins. Cached layout lists are kept separate for the resulting query context.
+
+Listing URLs use WordPress security nonces and can expire. If an old or saved link is rejected, reopen the plugin from the WordPress admin menu and select the component again.
+
 ## Development
 
 Use PHP 8.3 for development and CI. The released plugin supports PHP 8.0; keep plugin code compatible with that version. Composer development dependencies are not included in the release.
