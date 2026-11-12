@@ -7,11 +7,21 @@ defined('ABSPATH') || exit;
 final class AdminMenu
 {
     public const MENU_SLUG = 'flyntComponentsOverview';
+    public const VIEW_NONCE_ACTION = 'components_overview_view';
+    public const VIEW_NONCE_NAME = '_components_overview_nonce';
 
     public static function init(): void
     {
         add_action('admin_menu', [self::class, 'addAdminMenu']);
         add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
+    }
+
+    public static function getViewUrl(array $args = []): string
+    {
+        $args = ['page' => self::MENU_SLUG] + $args;
+        $args[self::VIEW_NONCE_NAME] = wp_create_nonce(self::VIEW_NONCE_ACTION);
+
+        return add_query_arg($args, admin_url('admin.php'));
     }
 
     public static function addAdminMenu(): void
@@ -57,6 +67,18 @@ final class AdminMenu
             return;
         }
 
+        $nonce = '';
+        if (
+            isset($_REQUEST[self::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(self::VIEW_NONCE_ACTION);
+            exit;
+        }
+
         if (isset($_GET['layoutName'])) {
             $layoutName = is_string($_GET['layoutName'])
                 // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Exact catalog key.
@@ -82,6 +104,12 @@ final class AdminMenu
             return;
         }
 
+        // Keep the native menu link as an entry point, without accepting unsigned view parameters.
+        if ($_GET === ['page' => self::MENU_SLUG]) {
+            wp_safe_redirect(self::getViewUrl());
+            exit;
+        }
+
         $action = isset($_GET['action']) && is_string($_GET['action'])
             ? sanitize_key(wp_unslash($_GET['action']))
             : '';
@@ -91,7 +119,19 @@ final class AdminMenu
             $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
             $flexibleContentLayouts->deleteTransients();
 
-            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
+            wp_safe_redirect(self::getViewUrl());
+            exit;
+        }
+
+        $nonce = '';
+        if (
+            isset($_REQUEST[self::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(self::VIEW_NONCE_ACTION);
             exit;
         }
 
@@ -100,7 +140,7 @@ final class AdminMenu
             return;
         }
 
-        $url = admin_url('admin.php?page=' . self::MENU_SLUG);
+        $url = self::getViewUrl();
         if (isset($_GET['postType']) && is_string($_GET['postType'])) {
             $postType = sanitize_text_field(wp_unslash($_GET['postType']));
             if ($postType === 'any' || post_type_exists($postType)) {

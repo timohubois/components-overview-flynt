@@ -48,6 +48,7 @@ final class RenderAdminPage
             <form id="components-overview-flynt" method="get">
                 <input type="hidden" name="page" value="<?php echo esc_attr($inputPageValue) ?>" />
                 <?php
+                wp_nonce_field(AdminMenu::VIEW_NONCE_ACTION, AdminMenu::VIEW_NONCE_NAME, false);
                 // Preserve postType filter when searching (matches native WordPress behavior)
                 if ($currentPostType !== '') {
                     echo '<input type="hidden" name="postType" value="' . esc_attr($currentPostType) . '" />';
@@ -90,7 +91,7 @@ final class RenderAdminPage
             <h1 class="wp-heading-inline"><?php echo wp_kses_post($heading); ?></h1>
             <?php printf(
                 '<a href="%s" class="page-title-action">%s</a>',
-                esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
+                esc_url(AdminMenu::getViewUrl()),
                 esc_html__('Back to Overview', 'components-overview-flynt'),
             ); ?>
             <?php
@@ -111,6 +112,7 @@ final class RenderAdminPage
                 <input type="hidden" name="page" value="<?php echo esc_attr($inputPageValue) ?>" />
                 <input type="hidden" name="postType" value="<?php echo esc_attr($inputPostTypeValue) ?>" />
                 <input type="hidden" name="layoutName" value="<?php echo esc_attr($inputLayoutNameValue) ?>" />
+                <?php wp_nonce_field(AdminMenu::VIEW_NONCE_ACTION, AdminMenu::VIEW_NONCE_NAME, false); ?>
                 <?php $listTablePostsWithLayout->views() ?>
                 <?php $listTablePostsWithLayout->search_box(
                     esc_attr__('Search', 'components-overview-flynt'),
@@ -131,7 +133,7 @@ final class RenderAdminPage
                 'The requested layout is not available. Please select a layout from the overview.',
                 'components-overview-flynt'
             ),
-            esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
+            esc_url(AdminMenu::getViewUrl()),
             esc_html__('Back to Overview', 'components-overview-flynt')
         );
     }

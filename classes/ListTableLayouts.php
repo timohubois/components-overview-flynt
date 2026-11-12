@@ -19,6 +19,18 @@ final class ListTableLayouts extends WP_List_Table
 
     public function __construct()
     {
+        $nonce = '';
+        if (
+            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
+            exit;
+        }
+
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
             'plural' => __('Components Overview for Flynt', 'components-overview-flynt'),
@@ -64,7 +76,7 @@ final class ListTableLayouts extends WP_List_Table
 
         $views['any'] = sprintf(
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-            esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
+            esc_url(AdminMenu::getViewUrl()),
             $currentPostType === 'any' && !$isSearch ? ' class="current"' : '',
             __('All', 'components-overview-flynt'),
             $flexibleContentLayouts->getLayoutsCount()
@@ -81,7 +93,7 @@ final class ListTableLayouts extends WP_List_Table
 
             $views[$postType] = sprintf(
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-                esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=' . $postType)),
+                esc_url(AdminMenu::getViewUrl(['postType' => $postType])),
                 $currentPostType === $postType ? ' class="current"' : '',
                 $postTypeObject->labels->name ?? $postType,
                 $count
@@ -94,19 +106,12 @@ final class ListTableLayouts extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
-        $href = sprintf(
-            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s'),
-            $item['name']
-        );
-
+        $args = ['layoutName' => $item['name']];
         $currentPostType = $this->postTypeFilter ?: 'any';
         if ($currentPostType !== 'any') {
-            $href = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s&postType=%s'),
-                $item['name'],
-                $currentPostType
-            );
+            $args['postType'] = $currentPostType;
         }
+        $href = AdminMenu::getViewUrl($args);
 
         switch ($column_name) {
             case 'layout':

@@ -25,6 +25,18 @@ final class ListTablePostsWithLayout extends WP_List_Table
 
     public function __construct(?string $layoutName = null)
     {
+        $nonce = '';
+        if (
+            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
+            exit;
+        }
+
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
             'plural'    => __('Components Overview for Flynt', 'components-overview-flynt'),
@@ -84,10 +96,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
         $postsWithLayout = new PostsWithLayout();
 
         $count = $postsWithLayout->getCount($layoutName, $fieldGroups, 'any', $search);
-        $href = sprintf(
-            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s'),
-            $layoutName
-        );
+        $href = AdminMenu::getViewUrl(['layoutName' => $layoutName]);
 
         $views['any'] = sprintf(
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
@@ -105,11 +114,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
                 continue;
             }
 
-            $href = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s&postType=%s'),
-                $layoutName,
-                $postType
-            );
+            $href = AdminMenu::getViewUrl(['layoutName' => $layoutName, 'postType' => $postType]);
 
             $views[$postType] = sprintf(
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
