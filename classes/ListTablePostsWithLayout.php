@@ -229,6 +229,27 @@ final class ListTablePostsWithLayout extends WP_List_Table
             $this->getSearchQuery()
         );
 
+        // An out-of-range query has no rows, so WordPress may not calculate found_posts.
+        if ($pageNumber > 1 && empty($wpQuery->posts)) {
+            $count = $postsWithLayout->getCount(
+                $this->layoutName,
+                $fieldGroups,
+                $this->postTypeFilter ?: 'any',
+                $this->search
+            );
+            $pageNumber = min($pageNumber, max(1, (int) ceil($count / $perPage)));
+            $wpQuery = $postsWithLayout->get(
+                $this->layoutName,
+                $fieldGroups,
+                $this->postTypeFilter ?: 'any',
+                $perPage,
+                $pageNumber,
+                $this->orderby,
+                $this->order,
+                $this->getSearchQuery()
+            );
+        }
+
         $this->items = $wpQuery->posts ?? [];
 
         $this->set_pagination_args([

@@ -164,7 +164,6 @@ final class ListTableLayouts extends WP_List_Table
     public function prepare_items(): void
     {
         $perPage = $this->get_items_per_page('components_overview_posts_per_page');
-        $pageNumber = $this->get_pagenum();
         $currentPostType = $this->postTypeFilter ?: 'any';
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
@@ -198,16 +197,14 @@ final class ListTableLayouts extends WP_List_Table
         // Calculate total items after search filtering
         $totalItems = count($allLayouts);
 
-        // Apply pagination AFTER search and sorting
-        $offset = ($pageNumber - 1) * $perPage;
-        $layouts = array_slice($allLayouts, $offset, $perPage);
-
         $this->set_pagination_args([
             'total_items' => (int) $totalItems,
             'per_page' => (int) $perPage,
             'total_pages' => (int) ceil($totalItems / $perPage),
         ]);
 
-        $this->items = $layouts;
+        // Native get_pagenum() can only clamp the requested page after the filtered total is known.
+        $offset = ($this->get_pagenum() - 1) * $perPage;
+        $this->items = array_slice($allLayouts, $offset, $perPage);
     }
 }
