@@ -17,32 +17,86 @@ if (!class_exists('WP_Posts_List_Table')) {
 
 final class ListTablePostsWithLayout extends WP_List_Table
 {
-    public function __construct()
+    private string $layoutName;
+    private string $postTypeFilter;
+    private ?string $search;
+    private string $orderby;
+    private string $order;
+
+    public function __construct(?string $layoutName = null)
     {
+        $nonce = '';
+        if (
+            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
+            exit;
+        }
+
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
             'plural'    => __('Components Overview for Flynt', 'components-overview-flynt'),
             'ajax'      => false
         ]);
+
+        $this->layoutName = $layoutName ?? (
+            isset($_GET['layoutName']) && is_string($_GET['layoutName'])
+                ? sanitize_text_field(wp_unslash($_GET['layoutName']))
+                : ''
+        );
+
+        $postType = isset($_GET['postType']) && is_string($_GET['postType'])
+            ? sanitize_text_field(wp_unslash($_GET['postType']))
+            : '';
+        $this->postTypeFilter = $postType === 'any' || post_type_exists($postType) ? $postType : '';
+
+        $this->search = isset($_GET['s']) && is_string($_GET['s'])
+            ? sanitize_text_field(wp_unslash($_GET['s']))
+            : null;
+
+        $orderby = isset($_GET['orderby']) && is_string($_GET['orderby'])
+            ? sanitize_text_field(wp_unslash($_GET['orderby']))
+            : 'post_date';
+        $this->orderby = array_key_exists($orderby, $this->get_sortable_columns()) ? $orderby : 'post_date';
+
+        $order = isset($_GET['order']) && is_string($_GET['order'])
+            ? strtoupper(sanitize_text_field(wp_unslash($_GET['order'])))
+            : 'DESC';
+        $this->order = $order === 'ASC' ? 'ASC' : 'DESC';
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    public function getPostTypeFilter(): string
+    {
+        return $this->postTypeFilter;
+    }
+
+    public function getSearchQuery(): string
+    {
+        return $this->search ?? '';
+    }
+
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_views()
     {
-        $layoutName = isset($_GET['layoutName']) ? sanitize_text_field(wp_unslash($_GET['layoutName'])) : false;
-        $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'any';
-        $isSearch = isset($_GET['s']) && !empty($_GET['s']);
-        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : null;
+        $layoutName = $this->layoutName;
+        if ($layoutName === '') {
+            return [];
+        }
+
+        $currentPostType = $this->postTypeFilter ?: 'any';
+        $isSearch = $this->getSearchQuery() !== '';
+        $search = $this->search;
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
         $fieldGroups = $flexibleContentLayouts->getFieldGroupLayouts();
         $postsWithLayout = new PostsWithLayout();
 
         $count = $postsWithLayout->getCount($layoutName, $fieldGroups, 'any', $search);
-        $href = sprintf(
-            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s'),
-            $layoutName
-        );
+        $href = AdminMenu::getViewUrl(['layoutName' => $layoutName]);
 
         $views['any'] = sprintf(
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
@@ -60,11 +114,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
                 continue;
             }
 
-            $href = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s&postType=%s'),
-                $layoutName,
-                $postType
-            );
+            $href = AdminMenu::getViewUrl(['layoutName' => $layoutName, 'postType' => $postType]);
 
             $views[$postType] = sprintf(
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
@@ -78,7 +128,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
         return $views;
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
         $wpPostsListTable = new WP_Posts_List_Table();
@@ -122,7 +172,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
         }
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_columns()
     {
         return [
@@ -132,7 +182,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
         ];
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_sortable_columns()
     {
         return [
@@ -142,12 +192,10 @@ final class ListTablePostsWithLayout extends WP_List_Table
         ];
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function prepare_items(): void
     {
-        $perPage = get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)
-            ? (int) get_user_meta(get_current_user_id(), 'components_overview_posts_per_page', true)
-            : 20;
+        $perPage = $this->get_items_per_page('components_overview_posts_per_page');
         $pageNumber = $this->get_pagenum();
         $columns = $this->get_columns();
         $hidden = [];
@@ -155,11 +203,15 @@ final class ListTablePostsWithLayout extends WP_List_Table
 
         $this->_column_headers = [$columns, $hidden, $sortable];
 
-        $layoutName = empty($_GET['layoutName']) ? false : sanitize_text_field(wp_unslash($_GET['layoutName']));
-        $postType = empty($_GET['postType']) ? 'any' : sanitize_text_field(wp_unslash($_GET['postType']));
-        $orderby = empty($_GET['orderby']) ? 'post_date' : sanitize_text_field(wp_unslash($_GET['orderby']));
-        $order = empty($_GET['order']) ? 'DESC' : sanitize_text_field(wp_unslash($_GET['order']));
-        $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
+        if ($this->layoutName === '') {
+            $this->items = [];
+            $this->set_pagination_args([
+                'total_items' => 0,
+                'per_page' => $perPage,
+                'total_pages' => 0,
+            ]);
+            return;
+        }
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
         $fieldGroups = $flexibleContentLayouts->getFieldGroupLayouts();
@@ -167,15 +219,36 @@ final class ListTablePostsWithLayout extends WP_List_Table
         // Use single query with OR meta_query instead of multiple queries
         $postsWithLayout = new PostsWithLayout();
         $wpQuery = $postsWithLayout->get(
-            $layoutName,
+            $this->layoutName,
             $fieldGroups,
-            $postType,
+            $this->postTypeFilter ?: 'any',
             $perPage,
             $pageNumber,
-            $orderby,
-            $order,
-            $search
+            $this->orderby,
+            $this->order,
+            $this->getSearchQuery()
         );
+
+        // An out-of-range query has no rows, so WordPress may not calculate found_posts.
+        if ($pageNumber > 1 && empty($wpQuery->posts)) {
+            $count = $postsWithLayout->getCount(
+                $this->layoutName,
+                $fieldGroups,
+                $this->postTypeFilter ?: 'any',
+                $this->search
+            );
+            $pageNumber = min($pageNumber, max(1, (int) ceil($count / $perPage)));
+            $wpQuery = $postsWithLayout->get(
+                $this->layoutName,
+                $fieldGroups,
+                $this->postTypeFilter ?: 'any',
+                $perPage,
+                $pageNumber,
+                $this->orderby,
+                $this->order,
+                $this->getSearchQuery()
+            );
+        }
 
         $this->items = $wpQuery->posts ?? [];
 

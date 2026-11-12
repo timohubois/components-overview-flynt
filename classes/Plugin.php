@@ -33,17 +33,23 @@ final class Plugin
         $title = __('404 – Theme not found', 'components-overview-flynt');
         $message = sprintf(
             // translators: 1: <a> element 2: </a> element
-            __('The “Components Overview for Flynt” plugin requires a active %1$sFlynt%2$s based theme to work.', 'components-overview-flynt'),
+            __(
+                'The “Components Overview for Flynt” plugin requires a active %1$sFlynt%2$s based theme to work.',
+                'components-overview-flynt'
+            ),
             "<a href='https://flyntwp.com/' target='_blank' rel='noopener noreferrer'>",
             "</a>"
         );
 
-        echo '<div class="notice notice-warning"><p><strong>' . esc_html($title) . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
+        echo '<div class="notice notice-warning"><p><strong>' . esc_html($title)
+            . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
     }
 
     public static function adminNoticeAcfNotFound(): void
     {
-        $title = esc_html(__('Components Overview for Flynt is missing a required plugin', 'components-overview-flynt'));
+        $title = esc_html(
+            __('Components Overview for Flynt is missing a required plugin', 'components-overview-flynt')
+        );
 
         $pluginName = sprintf(
             // translators: %1$s, %2$s: link wrapper.
@@ -61,11 +67,15 @@ final class Plugin
 
         $message = sprintf(
             // translators: %1$s: Plugin Name, %2$s: plugin page.
-            __('%1$s plugin not activated. Make sure you activate the plugin on the %2$s.', 'components-overview-flynt'),
+            __(
+                '%1$s plugin not activated. Make sure you activate the plugin on the %2$s.',
+                'components-overview-flynt'
+            ),
             $pluginName,
             $pluginsUrl
         );
 
-        echo '<div class="notice notice-warning"><p><strong>' . esc_html($title) . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
+        echo '<div class="notice notice-warning"><p><strong>' . esc_html($title)
+            . '</strong></p><p>' . wp_kses_post($message) . '</p></div>';
     }
 }

@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 Requires PHP: 8.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -54,6 +54,12 @@ Only layouts with matching saved content are listed. The layout list for each po
 
 After adding or removing component usage or changing field definitions, use **Refresh cached Layouts** at the top of the overview. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
 
+= Has language filtering been tested? =
+
+Language filtering has been tested with WPML, including individual languages and All languages, across both admin screens, navigation, search and cache refreshes.
+
+WPML is not required; the plugin was also tested without a multilingual plugin. Compatibility with other multilingual plugins has not been verified.
+
 = Can I use this to prove a component is unused and delete it? =
 
 No. This is a navigation aid, not a complete dependency audit. Results depend on the supported field structure, cached layout list and WordPress query visibility. A component can also be referenced in templates or other places the plugin does not inspect.
@@ -76,6 +82,15 @@ The plugin queries your site's WordPress database and stores temporary layout li
 Visit the [GitHub repository](https://github.com/timohubois/components-overview-flynt/) to report issues or contribute. The GitHub README covers the development setup.
 
 == Changelog ==
+= 2.2.5 =
+* Strengthen admin access and validation of listing parameters and registered layout names.
+* Protect listing links and search/filter forms with WordPress security nonces.
+* Preserve the current view context, including language selections, across both admin screens and cache refreshes.
+* Separate layout caches by filtered query context and refresh all contexts together.
+* Recover out-of-range filtered pages and make matching-post ordering deterministic.
+* Prevent unrelated results when no flexible-content field groups remain and avoid unnecessary sorting in count queries.
+* Clarify plugin requirements, coverage, caching and admin-link behavior.
+
 = 2.2.4 =
 * Secure the layout cache refresh action with nonce validation.
 * Improve admin input handling, escaping, and translation compatibility.
@@ -127,3 +142,7 @@ Visit the [GitHub repository](https://github.com/timohubois/components-overview-
 
 = 1.0 =
 * Initial Release
+
+== Upgrade Notice ==
+= 2.2.5 =
+Security and reliability fixes. If a saved listing link is rejected or has expired, reopen the plugin from the WordPress admin menu.

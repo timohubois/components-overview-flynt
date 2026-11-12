@@ -9,10 +9,12 @@ final class FlexibleContentLayouts
     private array $postTypesWithLayouts = [];
     private array $fieldGroups = [];
     private array $layouts = [];
+    private array $postTypeLayouts = [];
+    private ?string $cacheGeneration = null;
     private static ?FlexibleContentLayouts $instance = null;
 
-    const TRANSIENT_BASE_NAME = 'flynt_components_overview_flexibleContentLayouts_';
-    const TRANSIENT_EXPIRATION = WEEK_IN_SECONDS;
+    public const TRANSIENT_BASE_NAME = 'flynt_components_overview_flexibleContentLayouts_';
+    public const TRANSIENT_EXPIRATION = WEEK_IN_SECONDS;
 
     public static function init(): void
     {
@@ -39,18 +41,38 @@ final class FlexibleContentLayouts
 
     public function getLayoutsFromPostType(string $postType = 'any'): array
     {
-        $transientKey = self::TRANSIENT_BASE_NAME . $postType;
+        $postsWithLayout = new PostsWithLayout();
+        if ($this->cacheGeneration === null) {
+            $generationKey = self::TRANSIENT_BASE_NAME . '.generation';
+            $generation = get_transient($generationKey);
+            if (!is_string($generation) || $generation === '') {
+                $generation = wp_generate_uuid4();
+                set_transient($generationKey, $generation, self::TRANSIENT_EXPIRATION);
+            }
+            $this->cacheGeneration = $generation;
+        }
 
-        if (false !== ($postTypeLayouts = get_transient($transientKey))) {
+        // Use WordPress's filtered query and UI locale, without a language-plugin dependency.
+        $context = md5(serialize([
+            $postsWithLayout->getQueryContext($postType),
+            determine_locale(),
+            $this->cacheGeneration,
+        ]));
+        $transientKey = self::TRANSIENT_BASE_NAME . $postType . '.' . $context;
+
+        if (array_key_exists($transientKey, $this->postTypeLayouts)) {
+            return $this->postTypeLayouts[$transientKey];
+        }
+        $postTypeLayouts = get_transient($transientKey);
+        if (is_array($postTypeLayouts)) {
+            $this->postTypeLayouts[$transientKey] = $postTypeLayouts;
             return $postTypeLayouts;
         }
 
         $fieldGroupsLayouts = $this->getFieldGroupLayouts();
-
         $postTypeLayouts = [];
         foreach ($fieldGroupsLayouts as $fieldGroup => $layouts) {
             foreach ($layouts as $layout) {
-                $postsWithLayout = new PostsWithLayout();
                 // Pass single field group as array
                 $count = $postsWithLayout->getCount($layout['name'], [$fieldGroup => $layouts], $postType, null);
 
@@ -61,6 +83,7 @@ final class FlexibleContentLayouts
         }
 
         set_transient($transientKey, $postTypeLayouts, self::TRANSIENT_EXPIRATION);
+        $this->postTypeLayouts[$transientKey] = $postTypeLayouts;
 
         return $postTypeLayouts;
     }
@@ -158,6 +181,13 @@ final class FlexibleContentLayouts
 
     public function deleteTransients(): void
     {
+        // Expire every query context together; old entries retain their normal transient expiry.
+        delete_transient(self::TRANSIENT_BASE_NAME . '.generation');
+        $this->cacheGeneration = null;
+        $this->postTypeLayouts = [];
+        $this->layouts = [];
+
+        // Also remove the legacy, context-free entries.
         $postTypes = $this->getPostTypesWithLayouts();
 
         foreach ($postTypes as $postType) {

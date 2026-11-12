@@ -7,11 +7,51 @@ defined('ABSPATH') || exit;
 final class AdminMenu
 {
     public const MENU_SLUG = 'flyntComponentsOverview';
+    public const VIEW_NONCE_ACTION = 'components_overview_view';
+    public const VIEW_NONCE_NAME = '_components_overview_nonce';
 
     public static function init(): void
     {
         add_action('admin_menu', [self::class, 'addAdminMenu']);
         add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
+    }
+
+    public static function getViewUrl(array $args = []): string
+    {
+        $args = ['page' => self::MENU_SLUG] + $args + self::getViewContext();
+        $args[self::VIEW_NONCE_NAME] = wp_create_nonce(self::VIEW_NONCE_ACTION);
+
+        return add_query_arg(
+            map_deep($args, static fn($value) => is_string($value) ? urlencode($value) : $value),
+            admin_url('admin.php')
+        );
+    }
+
+    public static function getViewContext(): array
+    {
+        $context = [];
+        wp_parse_str((string) wp_parse_url(add_query_arg([]), PHP_URL_QUERY), $context);
+        if (($context['page'] ?? '') !== self::MENU_SLUG) {
+            return [];
+        }
+
+        $remove = array_merge(wp_removable_query_args(), [
+            'page', 'layoutName', 'postType', 's', 'paged', 'orderby', 'order',
+            'action', 'action2', '_wpnonce', '_wp_http_referer', '_wp_original_http_referer',
+            'redirect_to', self::VIEW_NONCE_NAME,
+        ]);
+        $context = array_diff_key($context, array_flip($remove));
+        foreach ($context as $name => $value) {
+            if (
+                !is_string($value)
+                || !preg_match('/^[a-z0-9_-]+$/iD', (string) $name)
+                || preg_match('/(?:^|_)nonce$/i', (string) $name)
+            ) {
+                unset($context[$name]);
+            }
+        }
+
+        return $context;
     }
 
     public static function addAdminMenu(): void
@@ -48,10 +88,33 @@ final class AdminMenu
 
     public static function renderAdminPage(): void
     {
-        $isLayoutName = isset($_GET['layoutName']);
+        if (!current_user_can('manage_options')) {
+            wp_die(
+                esc_html__('You are not allowed to access this page.', 'components-overview-flynt'),
+                '',
+                ['response' => 403]
+            );
+            return;
+        }
 
-        if ($isLayoutName) {
-            $layoutName = sanitize_text_field(wp_unslash($_GET['layoutName']));
+        $nonce = '';
+        if (
+            isset($_REQUEST[self::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(self::VIEW_NONCE_ACTION);
+            exit;
+        }
+
+        if (isset($_GET['layoutName'])) {
+            $layoutName = is_string($_GET['layoutName'])
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Exact catalog key.
+                ? wp_unslash($_GET['layoutName'])
+                : '';
+            // Validate the exact name against the layout catalog in the renderer.
             RenderAdminPage::postsWithLayout($layoutName);
         } else {
             RenderAdminPage::layoutsOverview();
@@ -62,30 +125,60 @@ final class AdminMenu
 
     public static function maybeRedirect(): void
     {
-        $action = isset($_GET['action']) ? sanitize_key(wp_unslash($_GET['action'])) : '';
+        if (!current_user_can('manage_options')) {
+            wp_die(
+                esc_html__('You are not allowed to access this page.', 'components-overview-flynt'),
+                '',
+                ['response' => 403]
+            );
+            return;
+        }
+
+        // Keep the native menu link as an entry point, without accepting unsigned view parameters.
+        if ($_GET === ['page' => self::MENU_SLUG]) {
+            wp_safe_redirect(self::getViewUrl());
+            exit;
+        }
+
+        $action = isset($_GET['action']) && is_string($_GET['action'])
+            ? sanitize_key(wp_unslash($_GET['action']))
+            : '';
         if ($action === 'refreshlayoutcache') {
             check_admin_referer('components_overview_refresh_layout_cache');
 
             $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
             $flexibleContentLayouts->deleteTransients();
 
-            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
+            wp_safe_redirect(self::getViewUrl());
             exit;
         }
 
-        $isEmptyLayoutName = isset($_GET['layoutName']) && empty($_GET['layoutName']);
-        if ($isEmptyLayoutName && isset($_GET['postType'])) {
-            $url = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=%s'),
-                sanitize_text_field(wp_unslash($_GET['postType']))
-            );
-            wp_safe_redirect($url);
+        $nonce = '';
+        if (
+            isset($_REQUEST[self::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(self::VIEW_NONCE_ACTION);
             exit;
         }
 
-        if ($isEmptyLayoutName) {
-            wp_safe_redirect(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG));
-            exit;
+        $isEmptyLayoutName = isset($_GET['layoutName']) && $_GET['layoutName'] === '';
+        if (!$isEmptyLayoutName) {
+            return;
         }
+
+        $url = self::getViewUrl();
+        if (isset($_GET['postType']) && is_string($_GET['postType'])) {
+            $postType = sanitize_text_field(wp_unslash($_GET['postType']));
+            if ($postType === 'any' || post_type_exists($postType)) {
+                $url = add_query_arg('postType', $postType, $url);
+            }
+        }
+
+        wp_safe_redirect($url);
+        exit;
     }
 }

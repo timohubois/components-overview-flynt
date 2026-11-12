@@ -12,25 +12,71 @@ if (!class_exists('WP_List_Table')) {
 
 final class ListTableLayouts extends WP_List_Table
 {
+    private string $postTypeFilter;
+    private string $search;
+    private string $orderby;
+    private string $order;
+
     public function __construct()
     {
+        $nonce = '';
+        if (
+            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
+            exit;
+        }
+
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
             'plural' => __('Components Overview for Flynt', 'components-overview-flynt'),
             'ajax' => false
         ]);
+
+        $postType = isset($_GET['postType']) && is_string($_GET['postType'])
+            ? sanitize_text_field(wp_unslash($_GET['postType']))
+            : '';
+        $this->postTypeFilter = $postType === 'any' || post_type_exists($postType) ? $postType : '';
+
+        $this->search = isset($_GET['s']) && is_string($_GET['s'])
+            ? sanitize_text_field(wp_unslash($_GET['s']))
+            : '';
+
+        $orderby = isset($_GET['orderby']) && is_string($_GET['orderby'])
+            ? sanitize_text_field(wp_unslash($_GET['orderby']))
+            : '';
+        $this->orderby = array_key_exists($orderby, $this->get_sortable_columns()) ? $orderby : '';
+
+        $order = isset($_GET['order']) && is_string($_GET['order'])
+            ? strtolower(sanitize_text_field(wp_unslash($_GET['order'])))
+            : 'asc';
+        $this->order = $order === 'desc' ? 'desc' : 'asc';
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    public function getPostTypeFilter(): string
+    {
+        return $this->postTypeFilter;
+    }
+
+    public function getSearchQuery(): string
+    {
+        return $this->search;
+    }
+
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_views()
     {
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
-        $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'any';
-        $isSearch = isset($_GET['s']) && !empty($_GET['s']);
+        $currentPostType = $this->postTypeFilter ?: 'any';
+        $isSearch = $this->search !== '';
 
         $views['any'] = sprintf(
             '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-            esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG)),
+            esc_url(AdminMenu::getViewUrl()),
             $currentPostType === 'any' && !$isSearch ? ' class="current"' : '',
             __('All', 'components-overview-flynt'),
             $flexibleContentLayouts->getLayoutsCount()
@@ -47,7 +93,7 @@ final class ListTableLayouts extends WP_List_Table
 
             $views[$postType] = sprintf(
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-                esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&postType=' . $postType)),
+                esc_url(AdminMenu::getViewUrl(['postType' => $postType])),
                 $currentPostType === $postType ? ' class="current"' : '',
                 $postTypeObject->labels->name ?? $postType,
                 $count
@@ -57,22 +103,15 @@ final class ListTableLayouts extends WP_List_Table
         return $views;
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
-        $href = sprintf(
-            admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s'),
-            $item['name']
-        );
-
-        $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'any';
+        $args = ['layoutName' => $item['name']];
+        $currentPostType = $this->postTypeFilter ?: 'any';
         if ($currentPostType !== 'any') {
-            $href = sprintf(
-                admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '&layoutName=%s&postType=%s'),
-                $item['name'],
-                $currentPostType
-            );
+            $args['postType'] = $currentPostType;
         }
+        $href = AdminMenu::getViewUrl($args);
 
         switch ($column_name) {
             case 'layout':
@@ -103,7 +142,7 @@ final class ListTableLayouts extends WP_List_Table
         }
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_columns()
     {
         $columns = [
@@ -113,7 +152,7 @@ final class ListTableLayouts extends WP_List_Table
         return $columns;
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_sortable_columns()
     {
         return [
@@ -121,12 +160,11 @@ final class ListTableLayouts extends WP_List_Table
         ];
     }
 
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- WordPress method name
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function prepare_items(): void
     {
         $perPage = $this->get_items_per_page('components_overview_posts_per_page');
-        $pageNumber = $this->get_pagenum();
-        $currentPostType = isset($_GET['postType']) ? sanitize_text_field(wp_unslash($_GET['postType'])) : 'any';
+        $currentPostType = $this->postTypeFilter ?: 'any';
 
         $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
 
@@ -134,48 +172,30 @@ final class ListTableLayouts extends WP_List_Table
         $allLayouts = $flexibleContentLayouts->getLayouts($currentPostType);
 
         // Search filtering - do this BEFORE pagination
-        $search = empty($_GET['s']) ? '' : sanitize_text_field(wp_unslash($_GET['s']));
-        if (!empty($search)) {
+        $search = strtolower($this->search);
+        if ($search !== '') {
             $allLayouts = array_filter($allLayouts, static function (array $item) use ($search): bool {
                 // Check both 'label' and 'name' fields for search, with fallback
                 $label = $item['label'] ?? $item['name'] ?? '';
                 $name = $item['name'] ?? '';
-                $searchLower = strtolower($search);
 
-                return str_contains(strtolower($label), $searchLower) ||
-                       str_contains(strtolower($name), $searchLower);
+                return str_contains(strtolower($label), $search) ||
+                       str_contains(strtolower($name), $search);
             });
         }
 
         $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
 
-        // Sorting
-        $orderby = empty($_GET['orderby']) ? '' : sanitize_text_field(wp_unslash($_GET['orderby']));
-        $order = empty($_GET['order']) ? '' : sanitize_text_field(wp_unslash($_GET['order']));
-        if ($orderby && $order) {
-            usort($allLayouts, function ($a, $b) use ($orderby, $order) {
-                if ($orderby === 'layout') {
-                    $orderby = 'label';
-                }
-
-                // Ensure the field exists before comparison
-                $aValue = $a[$orderby] ?? '';
-                $bValue = $b[$orderby] ?? '';
-
-                if ($order === 'asc') {
-                    return $aValue > $bValue ? 1 : ($aValue < $bValue ? -1 : 0);
-                } else {
-                    return $aValue < $bValue ? 1 : ($aValue > $bValue ? -1 : 0);
-                }
+        if ($this->orderby === 'layout') {
+            $order = $this->order;
+            usort($allLayouts, static function (array $a, array $b) use ($order): int {
+                $comparison = ($a['label'] ?? '') <=> ($b['label'] ?? '');
+                return $order === 'asc' ? $comparison : -$comparison;
             });
         }
 
         // Calculate total items after search filtering
         $totalItems = count($allLayouts);
-
-        // Apply pagination AFTER search and sorting
-        $offset = ($pageNumber - 1) * $perPage;
-        $layouts = array_slice($allLayouts, $offset, $perPage);
 
         $this->set_pagination_args([
             'total_items' => (int) $totalItems,
@@ -183,6 +203,8 @@ final class ListTableLayouts extends WP_List_Table
             'total_pages' => (int) ceil($totalItems / $perPage),
         ]);
 
-        $this->items = $layouts;
+        // Native get_pagenum() can only clamp the requested page after the filtered total is known.
+        $offset = ($this->get_pagenum() - 1) * $perPage;
+        $this->items = array_slice($allLayouts, $offset, $perPage);
     }
 }
