@@ -11,8 +11,8 @@ final class FlexibleContentLayouts
     private array $layouts = [];
     private static ?FlexibleContentLayouts $instance = null;
 
-    const TRANSIENT_BASE_NAME = 'flynt_components_overview_flexibleContentLayouts_';
-    const TRANSIENT_EXPIRATION = WEEK_IN_SECONDS;
+    public const TRANSIENT_BASE_NAME = 'flynt_components_overview_flexibleContentLayouts_';
+    public const TRANSIENT_EXPIRATION = WEEK_IN_SECONDS;
 
     public static function init(): void
     {

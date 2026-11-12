@@ -20,7 +20,9 @@ final class RenderAdminPage
         );
         ?>
         <div class="wrap">
-            <h1 class="wp-heading-inline"><?php esc_html_e('Components Overview for Flynt', 'components-overview-flynt') ?></h1>
+            <h1 class="wp-heading-inline"><?php
+                esc_html_e('Components Overview for Flynt', 'components-overview-flynt')
+            ?></h1>
             <?php printf(
                 '<a href="%s" class="page-title-action">%s</a>',
                 esc_url($refreshLayoutCacheUrl),
@@ -39,7 +41,9 @@ final class RenderAdminPage
             }
             ?>
             <hr class="wp-header-end">
-            <h2 class="screen-reader-text"><?php esc_html_e('Filter components list', 'components-overview-flynt') ?></h2>
+            <h2 class="screen-reader-text"><?php
+                esc_html_e('Filter components list', 'components-overview-flynt')
+            ?></h2>
             <form id="components-overview-flynt" method="get">
                 <input type="hidden" name="page" value="<?php echo esc_html($inputPageValue) ?>" />
                 <?php
@@ -98,7 +102,10 @@ final class RenderAdminPage
                 <input type="hidden" name="postType" value="<?php echo esc_attr($inputPostTypeValue) ?>" />
                 <input type="hidden" name="layoutName" value="<?php echo esc_attr($inputLayoutNameValue) ?>" />
                 <?php $listTablePostsWithLayout->views() ?>
-                <?php $listTablePostsWithLayout->search_box(esc_attr__('Search', 'components-overview-flynt'), 'search_posts'); ?>
+                <?php $listTablePostsWithLayout->search_box(
+                    esc_attr__('Search', 'components-overview-flynt'),
+                    'search_posts'
+                ); ?>
                 <?php $listTablePostsWithLayout->display() ?>
             </form>
         </div>
