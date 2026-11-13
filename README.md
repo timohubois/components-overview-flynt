@@ -19,7 +19,7 @@ Composer is not required to run the plugin.
 
 ## Usage
 
-Use the post-type filters and search to find a layout, then open it to see matching posts. After changing layouts or content, use **Refresh cached Layouts** if the overview is out of date. The overview reads registered ACF flexible content layouts and saved post data; layout lists are cached for up to one week.
+Use the post-type filters and search to find a layout, then open it to see matching posts. After changing layouts or content, use **Refresh components** if the overview is out of date. The overview reads registered ACF flexible content layouts and saved post data; layout lists are cached for up to one week.
 
 Language filtering has been tested with WPML, including individual languages and All languages. The plugin was also tested without a multilingual plugin; compatibility with other multilingual plugins has not been verified.
 

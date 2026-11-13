@@ -112,30 +112,9 @@ final class AdminMenu
             return;
         }
 
-        $nonce = '';
-        if (
-            isset($_REQUEST[self::VIEW_NONCE_NAME])
-            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
-        ) {
-            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
-        }
-        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
-            wp_nonce_ays(self::VIEW_NONCE_ACTION);
-            exit;
-        }
+        self::checkViewNonce();
 
-        if (isset($_GET['layoutName'])) {
-            $layoutName = is_string($_GET['layoutName'])
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Exact catalog key.
-                ? wp_unslash($_GET['layoutName'])
-                : '';
-            // Validate the exact name against the layout catalog in the renderer.
-            RenderAdminPage::postsWithLayout($layoutName);
-        } else {
-            RenderAdminPage::layoutsOverview();
-        }
-
-        set_screen_options();
+        RenderAdminPage::page();
     }
 
     public static function maybeRedirect(): void

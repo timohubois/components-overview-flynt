@@ -52,7 +52,7 @@ It derives post-type filters from public post types and the post_type conditions
 
 Only layouts with matching saved content are listed. The layout list for each post-type filter is cached in WordPress transients for up to one week and is not automatically refreshed on each content edit.
 
-After adding or removing component usage or changing field definitions, use **Refresh cached Layouts** at the top of the overview. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
+After adding or removing component usage or changing field definitions, use **Refresh components** below the overview heading. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
 
 = Has language filtering been tested? =
 
