@@ -65,23 +65,30 @@ final class RenderAdminPage
 
     public static function postsWithLayout(string $layoutName): void
     {
-        $layouts = [];
-        if ($layoutName !== '') {
-            $layouts = FlexibleContentLayouts::getInstance()->getLayouts();
-        }
-
-        if (!isset($layouts[$layoutName]) || !is_array($layouts[$layoutName])) {
+        // Resolve the heading from field definitions, without rebuilding the entire used-layout index.
+        $layout = self::registeredLayout($layoutName);
+        if ($layout === null) {
             self::layoutNotFound();
             return;
         }
 
-        $currentLayout = $layouts[$layoutName];
-        $heading = isset($currentLayout['label']) && is_string($currentLayout['label'])
-            ? $currentLayout['label']
-            : $layoutName;
-
         $listTablePostsWithLayout = new ListTablePostsWithLayout($layoutName);
         $listTablePostsWithLayout->prepare_items();
+        // Preserve the unavailable-layout check when search or post-type filtering returns no rows.
+        if (!$listTablePostsWithLayout->has_items()) {
+            $count = (new PostsWithLayout())->getCount(
+                $layoutName,
+                FlexibleContentLayouts::getInstance()->getFieldGroupLayouts(),
+                'any',
+                null
+            );
+            if ($count === 0) {
+                self::layoutNotFound();
+                return;
+            }
+        }
+
+        $heading = isset($layout['label']) && is_string($layout['label']) ? $layout['label'] : $layoutName;
 
         $inputPageValue = AdminMenu::MENU_SLUG;
         $inputPostTypeValue = $listTablePostsWithLayout->getPostTypeFilter();
@@ -126,6 +133,38 @@ final class RenderAdminPage
             </form>
         </div>
         <?php
+    }
+
+    private static function registeredLayout(string $name): ?array
+    {
+        $matches = [];
+        foreach (FlexibleContentLayouts::getInstance()->getFieldGroupLayouts() as $group => $layouts) {
+            foreach ($layouts as $layout) {
+                if ($layout['name'] === $name) {
+                    $matches[$group] = $layout;
+                }
+            }
+        }
+        if ($matches === []) {
+            return null;
+        }
+        // Most Flynt field groups share the same component label; no usage lookup is needed then.
+        $labels = array_map(
+            static fn(array $layout) => isset($layout['label']) && is_string($layout['label'])
+                ? $layout['label'] : $name,
+            $matches
+        );
+        if (count(array_unique($labels)) === 1) {
+            return end($matches);
+        }
+        // With conflicting labels, mirror the overview's last used definition, not the last registration.
+        $match = null;
+        foreach ($matches as $group => $layout) {
+            if ((new PostsWithLayout())->getCount($name, [$group => [$layout]], 'any', null) > 0) {
+                $match = $layout;
+            }
+        }
+        return $match;
     }
 
     private static function viewContextFields(): void
