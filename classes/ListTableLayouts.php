@@ -120,15 +120,18 @@ final class ListTableLayouts extends WP_List_Table
                 printf(
                     '<a class="row-title" href="%s" aria-label="%s">%s</a>',
                     esc_url($href),
-                    /* translators: %s: Post title. */
-                    esc_attr(sprintf(__('&#8220;%s&#8221; (Edit)', 'components-overview-flynt'), $title)),
+                    esc_attr(sprintf(
+                        /* translators: %s: Component label. */
+                        __('View where %s is used', 'components-overview-flynt'),
+                        wp_strip_all_tags($title)
+                    )),
                     wp_kses_post($title)
                 );
                 echo "</strong>\n";
                 echo wp_kses_post($this->row_actions($actions));
                 return;
             case 'name':
-                return $item['name'];
+                return '<code class="components-overview-name">' . esc_html($item['name']) . '</code>';
             default:
                 return '';
         }
@@ -138,8 +141,8 @@ final class ListTableLayouts extends WP_List_Table
     public function get_columns()
     {
         $columns = [
-            'layout' => __('Layout', 'components-overview-flynt'),
-            'name' => __('Name', 'components-overview-flynt'),
+            'layout' => __('Component', 'components-overview-flynt'),
+            'name' => __('Internal name', 'components-overview-flynt'),
         ];
         return $columns;
     }

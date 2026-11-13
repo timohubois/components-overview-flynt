@@ -74,7 +74,7 @@ The plugin queries your site's WordPress database and stores temporary layout li
 
 == Screenshots ==
 
-1. Browse used components by Layout and Name, filter by post type, search, and select View where used.
+1. Browse used components by their label and internal name, filter by post type, search, and select View where used.
 2. Find the pages using a selected component, with post type, date, and edit or view links.
 
 == Want to contribute? ==
