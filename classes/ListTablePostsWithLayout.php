@@ -165,6 +165,13 @@ final class ListTablePostsWithLayout extends WP_List_Table
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
+    protected function handle_row_actions($item, $column_name, $primary)
+    {
+        // The primary column's row_actions() already includes the native responsive toggle.
+        return '';
+    }
+
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function get_columns()
     {
         return [
