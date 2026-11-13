@@ -9,7 +9,7 @@ use Rector\Arguments\Rector\MethodCall\RemoveMethodCallParamRector;
 use Rector\Arguments\Rector\ClassMethod\ReplaceArgumentDefaultValueRector;
 
 return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->phpVersion(PhpVersion::PHP_80);
+    $rectorConfig->phpVersion(PhpVersion::PHP_83);
 
     $rectorConfig->autoloadPaths([
         __DIR__ . '/vendor/squizlabs/php_codesniffer/autoload.php',
@@ -26,7 +26,7 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->sets([
-        SetList::PHP_80,
+        SetList::PHP_83,
         SetList::CODING_STYLE,
         SetList::CODE_QUALITY,
         SetList::DEAD_CODE,

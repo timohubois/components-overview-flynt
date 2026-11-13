@@ -20,7 +20,10 @@ final class Plugin
             return;
         }
 
-        AdminMenu::init();
+        RestApi::init();
+        if (is_admin()) {
+            AdminMenu::init();
+        }
     }
 
     public static function getPluginRootDir(): string

@@ -1,10 +1,10 @@
 === Components Overview for Flynt ===
 Contributors: timohubois
 Tags: flynt, components
-Requires at least: 6.5
+Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 2.2.5
-Requires PHP: 8.0
+Stable tag: 2.3.0
+Requires PHP: 8.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,6 +22,7 @@ Open **Components Overview for Flynt** in the WordPress admin to browse the ACF 
 * Filter the overview and matching content by post type.
 * Search components by label or name, and search within matching posts.
 * Open matching posts for editing or viewing, with post type and date shown in the list.
+* Keep native WordPress page navigation, while loading the overview data and post-type filters asynchronously.
 * Adjust the number of items per page through Screen Options.
 * Refresh the cached layout list after content or field changes.
 
@@ -33,7 +34,7 @@ The overview follows Flynt's field-group and stored-layout conventions. It is no
 
 == Installation ==
 
-1. Make sure WordPress 6.5 or later and PHP 8.0 or later are available, your Flynt-based theme is active, and ACF PRO is installed and active.
+1. Make sure WordPress 6.7 or later and PHP 8.3 or later are available, your Flynt-based theme is active, and ACF PRO is installed and active.
 2. Under **Plugins > Add New**, search for **Components Overview for Flynt**, install it and activate it. Alternatively, upload the components-overview-flynt folder to /wp-content/plugins/ and activate it under **Plugins**.
 3. Sign in with an account that has the manage_options capability (administrators by default) and open **Components Overview for Flynt** in the admin menu.
 4. Select a component to find matching content. Use the post-type links and search to narrow the results.
@@ -52,7 +53,17 @@ It derives post-type filters from public post types and the post_type conditions
 
 Only layouts with matching saved content are listed. The layout list for each post-type filter is cached in WordPress transients for up to one week and is not automatically refreshed on each content edit.
 
-After adding or removing component usage or changing field definitions, use **Refresh cached Layouts** at the top of the overview. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
+After adding or removing component usage or changing field definitions, use **Refresh components** below the overview heading. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
+
+= Why does the page show a loading indicator? =
+
+Valid cached component lists render immediately. When a list is not cached, static placeholder rows appear while an authenticated WordPress REST request rebuilds it, without blocking the initial page. The matching-post table is always rendered directly on its admin page. Navigation, including search, filters, sorting and pagination, uses normal WordPress links and GET forms, without custom page transitions.
+
+Overview filters render immediately when all their layout counts are cached. Otherwise, the whole filter bar loads separately behind a compact placeholder; matching-post filters always load separately. Post types with zero results remain hidden; **All** remains available. There are no fake pagination controls or fixed-height layout locks.
+
+JavaScript and access to the plugin's REST endpoint are needed for uncached overview data and asynchronously loaded filters. If a request fails, reload the page. If the view has expired, reopen the plugin from the admin menu. There is no custom retry control. If the overview rebuild fails, filter loading stops without starting another rebuild.
+
+Queries still run within a PHP request and remain subject to server timeouts. This is asynchronous loading, not a persistent background job.
 
 = Has language filtering been tested? =
 
@@ -74,7 +85,7 @@ The plugin queries your site's WordPress database and stores temporary layout li
 
 == Screenshots ==
 
-1. Browse used components by Layout and Name, filter by post type, search, and select View where used.
+1. Browse used components by their label and internal name, filter by post type, search, and select View where used.
 2. Find the pages using a selected component, with post type, date, and edit or view links.
 
 == Want to contribute? ==
@@ -82,6 +93,13 @@ The plugin queries your site's WordPress database and stores temporary layout li
 Visit the [GitHub repository](https://github.com/timohubois/components-overview-flynt/) to report issues or contribute. The GitHub README covers the development setup.
 
 == Changelog ==
+= 2.3.0 =
+* Load uncached component lists and post-type filters asynchronously while preserving native WordPress navigation.
+* Display cached component lists immediately and keep matching-post tables server-rendered.
+* Improve component labels, loading feedback, mobile table behavior and right-to-left alignment.
+* Restrict component usage queries to field groups that register the component.
+* Require WordPress 6.7 or later and PHP 8.3 or later.
+
 = 2.2.5 =
 * Strengthen admin access and validation of listing parameters and registered layout names.
 * Protect listing links and search/filter forms with WordPress security nonces.
@@ -144,5 +162,8 @@ Visit the [GitHub repository](https://github.com/timohubois/components-overview-
 * Initial Release
 
 == Upgrade Notice ==
+= 2.3.0 =
+Requires WordPress 6.7 or later and PHP 8.3 or later. Uncached component lists and post-type filters now load asynchronously and need JavaScript and access to the plugin's authenticated REST endpoint.
+
 = 2.2.5 =
 Security and reliability fixes. If a saved listing link is rejected or has expired, reopen the plugin from the WordPress admin menu.

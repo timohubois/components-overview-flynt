@@ -20,16 +20,7 @@ final class PostsWithLayout
     ): WP_Query {
 
         $offset = ($page - 1) * $postsPerPage;
-
-        // Build OR meta_query for all field groups
-        $metaQuery = ['relation' => 'OR'];
-        foreach ($fieldGroups as $fieldGroup => $layouts) {
-            $metaQuery[] = [
-                'key' => $fieldGroup,
-                'value' => serialize(strval($layoutName)),
-                'compare' => 'LIKE'
-            ];
-        }
+        $metaQuery = $this->getMetaQuery($layoutName, $fieldGroups);
 
         $args = [
             'post_type' => $this->getPostTypes($postType),
@@ -46,7 +37,7 @@ final class PostsWithLayout
         ];
 
         // WordPress ignores an empty meta_query; do not turn it into an unfiltered posts query.
-        if ($fieldGroups === []) {
+        if ($metaQuery === []) {
             $args['post__in'] = [0];
             $args['no_found_rows'] = true;
         }
@@ -60,18 +51,9 @@ final class PostsWithLayout
         string $postType,
         ?string $search
     ): int {
-        if ($fieldGroups === []) {
+        $metaQuery = $this->getMetaQuery($layoutName, $fieldGroups);
+        if ($metaQuery === []) {
             return 0;
-        }
-
-        // Build OR meta_query for all field groups
-        $metaQuery = ['relation' => 'OR'];
-        foreach ($fieldGroups as $fieldGroup => $layouts) {
-            $metaQuery[] = [
-                'key' => $fieldGroup,
-                'value' => serialize(strval($layoutName)),
-                'compare' => 'LIKE'
-            ];
         }
 
         $args = [
@@ -116,6 +98,24 @@ final class PostsWithLayout
         }
 
         return $wpdb->remove_placeholder_escape($query->request);
+    }
+
+    private function getMetaQuery(string $layoutName, array $fieldGroups): array
+    {
+        $metaQuery = [];
+        foreach ($fieldGroups as $fieldGroup => $layouts) {
+            foreach ($layouts as $layout) {
+                if ($layout['name'] === $layoutName) {
+                    $metaQuery[] = [
+                        'key' => $fieldGroup,
+                        'value' => serialize($layoutName),
+                        'compare' => 'LIKE',
+                    ];
+                    break;
+                }
+            }
+        }
+        return $metaQuery === [] ? [] : ['relation' => 'OR'] + $metaQuery;
     }
 
     private function getPostTypes(string $postType): array

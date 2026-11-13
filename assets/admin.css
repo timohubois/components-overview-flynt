@@ -1,0 +1,91 @@
+#components-overview-async [hidden] {
+  display: none;
+}
+
+#components-overview-async .components-overview-filters {
+  float: inline-start;
+  min-height: 34px;
+}
+
+#components-overview-async .components-overview-filter-placeholder li {
+  line-height: 2;
+}
+
+#components-overview-async .components-overview-placeholder {
+  display: block;
+  width: 55%;
+  height: 14px;
+  margin: 5px 0;
+  border-radius: 2px;
+  background: #dcdcde;
+}
+
+#components-overview-async .components-overview-filter-placeholder .components-overview-placeholder {
+  display: inline-block;
+  width: 160px;
+  height: 12px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+#components-overview-async .components-overview-placeholder-short {
+  width: 90px;
+  height: 11px;
+  margin-top: 10px;
+}
+
+#components-overview-async .components-overview-name {
+  padding: 0;
+  background: none;
+  color: #646970;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 783px) {
+  #components-overview-async .column-name {
+    width: 30%;
+  }
+}
+
+@media (max-width: 782px) {
+  /* Unlike core post tables, these tables have no leading checkbox column. */
+  #components-overview-async .wp-list-table td:not(.column-primary):not(.check-column) {
+    flex: 0 1 100%;
+  }
+
+  #components-overview-async .components-overview-filters [data-error]:not([hidden]) {
+    font-size: 16px;
+    line-height: 2;
+    margin-bottom: 15px;
+  }
+
+  #components-overview-async .search-box {
+    display: flex;
+    gap: 8px;
+  }
+
+  #components-overview-async .search-box input[type="search"] {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+  }
+
+  #components-overview-async .search-box .button {
+    flex: none;
+    margin: 0;
+  }
+}
+
+#components-overview-async .components-overview-filters [data-error]:not([hidden]) {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+#components-overview-async [data-results] {
+  clear: both;
+}
+
+#components-overview-async [data-state="error"] .components-overview-loading-row {
+  display: none;
+}

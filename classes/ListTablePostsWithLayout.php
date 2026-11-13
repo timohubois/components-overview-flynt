@@ -22,20 +22,12 @@ final class ListTablePostsWithLayout extends WP_List_Table
     private ?string $search;
     private string $orderby;
     private string $order;
+    private ?WP_Posts_List_Table $dateRenderer = null;
 
+    // phpcs:disable WordPress.Security.NonceVerification.Recommended -- checkViewNonce() verifies this request.
     public function __construct(?string $layoutName = null)
     {
-        $nonce = '';
-        if (
-            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
-            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
-        ) {
-            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
-        }
-        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
-            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
-            exit;
-        }
+        AdminMenu::checkViewNonce();
 
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
@@ -68,6 +60,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
             : 'DESC';
         $this->order = $order === 'ASC' ? 'ASC' : 'DESC';
     }
+    // phpcs:enable WordPress.Security.NonceVerification.Recommended
 
     public function getPostTypeFilter(): string
     {
@@ -131,8 +124,6 @@ final class ListTablePostsWithLayout extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
-        $wpPostsListTable = new WP_Posts_List_Table();
-
         switch ($column_name) {
             case 'post_title':
                 $actions = [
@@ -166,10 +157,18 @@ final class ListTablePostsWithLayout extends WP_List_Table
                 $postTypeObject = get_post_type_object($item->post_type);
                 return esc_html($postTypeObject->labels->name);
             case 'post_date':
-                return $wpPostsListTable->column_date($item);
+                $this->dateRenderer ??= new WP_Posts_List_Table();
+                return $this->dateRenderer->column_date($item);
             default:
                 return '';
         }
+    }
+
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
+    protected function handle_row_actions($item, $column_name, $primary)
+    {
+        // The primary column's row_actions() already includes the native responsive toggle.
+        return '';
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
