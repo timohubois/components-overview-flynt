@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 Requires PHP: 8.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -89,6 +89,9 @@ The plugin queries your site's WordPress database and stores temporary layout li
 Visit the [GitHub repository](https://github.com/timohubois/components-overview-flynt/) to report issues or contribute. The GitHub README covers the development setup.
 
 == Changelog ==
+= 2.3.1 =
+* Add a subtle pulse to component-list and filter loading placeholders, respecting reduced-motion preferences.
+
 = 2.3.0 =
 * Load uncached component lists and post-type filters asynchronously while preserving native WordPress navigation.
 * Display cached component lists immediately and keep matching-post tables server-rendered.
