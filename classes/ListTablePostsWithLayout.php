@@ -24,19 +24,10 @@ final class ListTablePostsWithLayout extends WP_List_Table
     private string $order;
     private ?WP_Posts_List_Table $dateRenderer = null;
 
+    // phpcs:disable WordPress.Security.NonceVerification.Recommended -- checkViewNonce() verifies this request.
     public function __construct(?string $layoutName = null)
     {
-        $nonce = '';
-        if (
-            isset($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
-            && is_string($_REQUEST[AdminMenu::VIEW_NONCE_NAME])
-        ) {
-            $nonce = sanitize_text_field(wp_unslash($_REQUEST[AdminMenu::VIEW_NONCE_NAME]));
-        }
-        if (!wp_verify_nonce($nonce, AdminMenu::VIEW_NONCE_ACTION)) {
-            wp_nonce_ays(AdminMenu::VIEW_NONCE_ACTION);
-            exit;
-        }
+        AdminMenu::checkViewNonce();
 
         parent::__construct([
             'singular' => __('Component Overview for Flynt', 'components-overview-flynt'),
@@ -69,6 +60,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
             : 'DESC';
         $this->order = $order === 'ASC' ? 'ASC' : 'DESC';
     }
+    // phpcs:enable WordPress.Security.NonceVerification.Recommended
 
     public function getPostTypeFilter(): string
     {

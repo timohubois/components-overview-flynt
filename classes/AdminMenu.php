@@ -86,6 +86,21 @@ final class AdminMenu
         return $value;
     }
 
+    public static function checkViewNonce(): void
+    {
+        $nonce = '';
+        if (
+            isset($_REQUEST[self::VIEW_NONCE_NAME])
+            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
+        ) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
+            wp_nonce_ays(self::VIEW_NONCE_ACTION);
+            exit;
+        }
+    }
+
     public static function renderAdminPage(): void
     {
         if (!current_user_can('manage_options')) {
@@ -153,17 +168,7 @@ final class AdminMenu
             exit;
         }
 
-        $nonce = '';
-        if (
-            isset($_REQUEST[self::VIEW_NONCE_NAME])
-            && is_string($_REQUEST[self::VIEW_NONCE_NAME])
-        ) {
-            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::VIEW_NONCE_NAME]));
-        }
-        if (!wp_verify_nonce($nonce, self::VIEW_NONCE_ACTION)) {
-            wp_nonce_ays(self::VIEW_NONCE_ACTION);
-            exit;
-        }
+        self::checkViewNonce();
 
         $isEmptyLayoutName = isset($_GET['layoutName']) && $_GET['layoutName'] === '';
         if (!$isEmptyLayoutName) {
