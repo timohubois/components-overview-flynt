@@ -22,6 +22,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
     private ?string $search;
     private string $orderby;
     private string $order;
+    private ?WP_Posts_List_Table $dateRenderer = null;
 
     public function __construct(?string $layoutName = null)
     {
@@ -131,8 +132,6 @@ final class ListTablePostsWithLayout extends WP_List_Table
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     public function column_default($item, $column_name)
     {
-        $wpPostsListTable = new WP_Posts_List_Table();
-
         switch ($column_name) {
             case 'post_title':
                 $actions = [
@@ -166,7 +165,8 @@ final class ListTablePostsWithLayout extends WP_List_Table
                 $postTypeObject = get_post_type_object($item->post_type);
                 return esc_html($postTypeObject->labels->name);
             case 'post_date':
-                return $wpPostsListTable->column_date($item);
+                $this->dateRenderer ??= new WP_Posts_List_Table();
+                return $this->dateRenderer->column_date($item);
             default:
                 return '';
         }
