@@ -27,7 +27,7 @@ Open **Components Overview for Flynt** in the WordPress admin to browse the ACF 
 
 **Requirements and scope**
 
-This plugin needs an active [Flynt-based theme](https://flyntwp.com/) and **Advanced Custom Fields PRO** for Flexible Content fields. Neither is included. ACF PRO is a separate paid dependency; the free ACF plugin alone does not provide Flexible Content.
+This plugin needs an active [Flynt-based theme](https://github.com/flyntwp/flynt) and **Advanced Custom Fields PRO** for Flexible Content fields. Neither is included. ACF PRO is a separate paid dependency; the free ACF plugin alone does not provide Flexible Content.
 
 The overview follows Flynt's field-group and stored-layout conventions. It is not a general component index for arbitrary ACF setups, the block editor or template code. See the FAQs for coverage and caching limits.
 
