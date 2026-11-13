@@ -20,7 +20,7 @@ final class RenderAdminPage
                     : '';
                 self::postsWithLayout($layoutName);
             } else {
-                self::layoutsOverview();
+                self::layoutsOverview(true);
             }
             ?>
         </div>
@@ -194,8 +194,32 @@ final class RenderAdminPage
 
     private static function filters(ListTableLayouts|ListTablePostsWithLayout $table): bool
     {
-        $table->views();
-        return false;
+        // Only render counts synchronously when every required layout list is already cached.
+        $loading = !($table instanceof ListTableLayouts && $table->hasCachedViews());
+        printf(
+            '<div class="components-overview-filters" data-views data-state="%s"%s>',
+            $loading ? 'loading' : 'loaded',
+            $loading ? ' data-async="views" aria-busy="true"' : ''
+        );
+        ?>
+            <div data-body>
+                <?php if ($loading) : ?>
+                    <span class="screen-reader-text" role="status"><?php
+                        esc_html_e('Loading filters…', 'components-overview-flynt');
+                    ?></span>
+                    <ul class="subsubsub components-overview-filter-placeholder" aria-hidden="true">
+                        <li><span class="components-overview-placeholder"></span></li>
+                    </ul>
+                <?php else : ?>
+                    <?php $table->views(); ?>
+                <?php endif; ?>
+            </div>
+            <span data-error role="alert" hidden>
+                <span data-error-message></span>
+            </span>
+        </div>
+        <?php
+        return $loading;
     }
 
     private static function searchBox(string $search): void

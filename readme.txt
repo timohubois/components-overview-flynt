@@ -22,6 +22,7 @@ Open **Components Overview for Flynt** in the WordPress admin to browse the ACF 
 * Filter the overview and matching content by post type.
 * Search components by label or name, and search within matching posts.
 * Open matching posts for editing or viewing, with post type and date shown in the list.
+* Keep native WordPress page navigation, while loading the overview data and post-type filters asynchronously.
 * Adjust the number of items per page through Screen Options.
 * Refresh the cached layout list after content or field changes.
 
@@ -54,6 +55,16 @@ Only layouts with matching saved content are listed. The layout list for each po
 
 After adding or removing component usage or changing field definitions, use **Refresh components** below the overview heading. The matching-post list is queried when opened rather than stored in that layout cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
 
+= Why does the page show a loading indicator? =
+
+Valid cached component lists render immediately. When a list is not cached, static placeholder rows appear while an authenticated WordPress REST request rebuilds it, without blocking the initial page. The matching-post table is always rendered directly on its admin page. Navigation, including search, filters, sorting and pagination, uses normal WordPress links and GET forms, without custom page transitions.
+
+Overview filters render immediately when all their layout counts are cached. Otherwise, the whole filter bar loads separately behind a compact placeholder; matching-post filters always load separately. Post types with zero results remain hidden; **All** remains available. There are no fake pagination controls or fixed-height layout locks.
+
+JavaScript and access to the plugin's REST endpoint are needed for uncached overview data and asynchronously loaded filters. If a request fails, reload the page. If the view has expired, reopen the plugin from the admin menu. There is no custom retry control. If the overview rebuild fails, filter loading stops without starting another rebuild.
+
+Queries still run within a PHP request and remain subject to server timeouts. This is asynchronous loading, not a persistent background job.
+
 = Has language filtering been tested? =
 
 Language filtering has been tested with WPML, including individual languages and All languages, across both admin screens, navigation, search and cache refreshes.
@@ -83,7 +94,7 @@ Visit the [GitHub repository](https://github.com/timohubois/components-overview-
 
 == Changelog ==
 = Unreleased =
-* Require WordPress 6.7 or later and PHP 8.3 or later.
+* Require WordPress 6.7 or later and PHP 8.3 or later, and load admin JavaScript through the native Script Modules API.
 
 = 2.2.5 =
 * Strengthen admin access and validation of listing parameters and registered layout names.

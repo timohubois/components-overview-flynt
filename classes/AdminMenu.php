@@ -14,6 +14,7 @@ final class AdminMenu
     {
         add_action('admin_menu', [self::class, 'addAdminMenu']);
         add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
+        add_action('admin_enqueue_scripts', [self::class, 'enqueueAssets']);
     }
 
     public static function getViewUrl(array $args = []): string
@@ -68,6 +69,40 @@ final class AdminMenu
 
         add_action('load-' . $menuPage, [self::class, 'addScreenOptions']);
         add_action('load-' . $menuPage, [self::class, 'maybeRedirect']);
+    }
+
+    public static function enqueueAssets(string $hook): void
+    {
+        if ($hook !== 'toplevel_page_' . self::MENU_SLUG) {
+            return;
+        }
+
+        $baseUrl = plugin_dir_url(FLYNT_COMPONENTS_OVERVIEW_PLUGIN_FILE);
+        wp_enqueue_script_module(
+            'components-overview-flynt',
+            $baseUrl . 'assets/admin.js',
+            ['@wordpress/a11y'],
+            (string) filemtime(Plugin::getPluginRootDir() . 'assets/admin.js')
+        );
+        add_filter('script_module_data_components-overview-flynt', static fn(array $data): array => [
+            'endpoint' => rest_url(RestApi::NAMESPACE . '/table'),
+            'nonce' => wp_create_nonce('wp_rest'),
+            'language' => apply_filters('wpml_current_language', null),
+            'locale' => determine_locale(),
+            'loaded' => __('List loaded.', 'components-overview-flynt'),
+            'notLoaded' => __('The list has not loaded.', 'components-overview-flynt'),
+            'error' => __('The list could not be loaded.', 'components-overview-flynt'),
+            'reload' => __('Reload the page.', 'components-overview-flynt'),
+            'reopen' => __('Reopen Components Overview for Flynt from the admin menu.', 'components-overview-flynt'),
+            'filtersLoaded' => __('Filters loaded.', 'components-overview-flynt'),
+            'filtersError' => __('Filters could not be loaded.', 'components-overview-flynt'),
+        ] + $data);
+        wp_enqueue_style(
+            'components-overview-flynt',
+            $baseUrl . 'assets/admin.css',
+            [],
+            (string) filemtime(Plugin::getPluginRootDir() . 'assets/admin.css')
+        );
     }
 
     public static function addScreenOptions(): void
