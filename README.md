@@ -21,13 +21,9 @@ Composer is not required to run the plugin.
 
 Use the post-type filters and search to find a layout, then open it to see matching posts. After changing layouts or content, use **Refresh components** if the overview is out of date. The overview reads registered ACF flexible content layouts and saved post data; layout lists are cached for up to one week.
 
-Navigation uses normal WordPress links and GET forms, including **View where used**, Back, search, filters, sorting and pagination. WordPress and the browser remain responsible for history, focus and page transitions; the plugin does not implement its own navigation transitions.
+When the component list is not cached, it loads after the page opens. Post-type filters may also take a moment to appear.
 
-Valid cached component lists render immediately in PHP. On a cache miss, a few static placeholder rows appear in the native table while an authenticated WordPress REST request rebuilds the list. There are no fake pagination controls or fixed-height layout locks. The matching-post table is always rendered directly in PHP on its own admin page.
-
-Overview post-type filters also render immediately when all their layout counts are cached; otherwise the whole filter bar loads separately behind a compact placeholder. Matching-post filters always load separately. Counts never trigger an expensive rebuild during the initial page request. Post types with zero results remain hidden, while **All** stays available.
-
-JavaScript and access to the plugin's REST endpoint are needed for uncached overview data and asynchronously loaded filters. A failed request shows a plain local error asking you to reload the page, or reopen the plugin from the admin menu if its view nonce has expired; there is no custom retry control. If the overview rebuild fails, filter loading stops without starting another rebuild. Queries still run within PHP requests and remain subject to server timeouts, not a persistent background job.
+Loading requires JavaScript and access to the WordPress REST API. If it fails, reload the page. If the view has expired, reopen the plugin from the admin menu.
 
 Language filtering has been tested with WPML, including individual languages and All languages. The plugin was also tested without a multilingual plugin; compatibility with other multilingual plugins has not been verified.
 
