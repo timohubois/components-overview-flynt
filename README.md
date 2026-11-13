@@ -4,8 +4,8 @@ Components Overview for Flynt shows where components of the [Flynt WordPress the
 
 ## Requirements
 
-- WordPress 6.5 or later.
-- PHP 8.0 or later.
+- WordPress 6.7 or later.
+- PHP 8.3 or later.
 - An active Flynt-based theme with ACF flexible content fields and the ACF functionality required by that theme.
 - An account with the `manage_options` capability to access the overview.
 
@@ -25,7 +25,7 @@ Language filtering has been tested with WPML, including individual languages and
 
 ## Development
 
-Use PHP 8.3 for development and CI. The released plugin supports PHP 8.0; keep plugin code compatible with that version. Composer development dependencies are not included in the release.
+Use PHP 8.3 for development and CI, matching the plugin's minimum supported version. Composer development dependencies are not included in the release.
 
 After installation, ensure `php --version` reports PHP 8.3 and Composer uses that PHP installation, then run:
 

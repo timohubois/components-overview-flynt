@@ -1,10 +1,10 @@
 === Components Overview for Flynt ===
 Contributors: timohubois
 Tags: flynt, components
-Requires at least: 6.5
+Requires at least: 6.7
 Tested up to: 7.1
 Stable tag: 2.2.5
-Requires PHP: 8.0
+Requires PHP: 8.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -33,7 +33,7 @@ The overview follows Flynt's field-group and stored-layout conventions. It is no
 
 == Installation ==
 
-1. Make sure WordPress 6.5 or later and PHP 8.0 or later are available, your Flynt-based theme is active, and ACF PRO is installed and active.
+1. Make sure WordPress 6.7 or later and PHP 8.3 or later are available, your Flynt-based theme is active, and ACF PRO is installed and active.
 2. Under **Plugins > Add New**, search for **Components Overview for Flynt**, install it and activate it. Alternatively, upload the components-overview-flynt folder to /wp-content/plugins/ and activate it under **Plugins**.
 3. Sign in with an account that has the manage_options capability (administrators by default) and open **Components Overview for Flynt** in the admin menu.
 4. Select a component to find matching content. Use the post-type links and search to narrow the results.
@@ -82,6 +82,9 @@ The plugin queries your site's WordPress database and stores temporary layout li
 Visit the [GitHub repository](https://github.com/timohubois/components-overview-flynt/) to report issues or contribute. The GitHub README covers the development setup.
 
 == Changelog ==
+= Unreleased =
+* Require WordPress 6.7 or later and PHP 8.3 or later.
+
 = 2.2.5 =
 * Strengthen admin access and validation of listing parameters and registered layout names.
 * Protect listing links and search/filter forms with WordPress security nonces.
