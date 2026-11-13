@@ -45,6 +45,16 @@ composer check-platform-reqs
 composer php:lint
 ```
 
+### REST integration checks
+
+With the plugin, Flynt and ACF active in a **disposable local** WordPress installation, run from this repository:
+
+```sh
+wp --path=/path/to/disposable-wordpress eval-file tests/rest-api.php
+```
+
+The checks create and remove temporary pages and a subscriber, and invalidate the layout cache. They cover cold and cached overview rendering without initial usage queries, server-rendered matching posts, separately loaded filter links and counts, hidden zero-count post types, duplicate layout labels, registered field-group ownership, admin post-status visibility, pagination, permissions, nonces and request-context cleanup.
+
 ## License
 
 GPLv3 or later. See [LICENSE](LICENSE).
