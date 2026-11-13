@@ -16,6 +16,7 @@ final class ListTableLayouts extends WP_List_Table
     private string $search;
     private string $orderby;
     private string $order;
+    private bool $loading = false;
 
     // phpcs:disable WordPress.Security.NonceVerification.Recommended -- checkViewNonce() verifies this request.
     public function __construct()
@@ -57,6 +58,22 @@ final class ListTableLayouts extends WP_List_Table
     public function getSearchQuery(): string
     {
         return $this->search;
+    }
+
+    public function isLoading(): bool
+    {
+        return $this->loading;
+    }
+
+    public function hasCachedViews(): bool
+    {
+        $catalog = FlexibleContentLayouts::getInstance();
+        foreach (array_merge(['any'], $catalog->getPostTypesWithLayouts()) as $postType) {
+            if ($catalog->getCachedLayoutsFromPostType($postType) === null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
@@ -137,6 +154,40 @@ final class ListTableLayouts extends WP_List_Table
         }
     }
 
+    public function display()
+    {
+        if ($this->loading) {
+            echo '<span class="screen-reader-text" role="status" data-initial-label>'
+                . esc_html__('Loading components…', 'components-overview-flynt') . '</span>';
+        }
+        parent::display();
+    }
+
+    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
+    public function display_rows_or_placeholder()
+    {
+        if (!$this->loading) {
+            parent::display_rows_or_placeholder();
+            return;
+        }
+
+        $rows = min(3, $this->get_items_per_page('components_overview_posts_per_page'));
+        for ($row = 0; $row < $rows; $row++) {
+            ?>
+            <tr class="components-overview-loading-row" aria-hidden="true">
+                <td class="column-layout column-primary">
+                    <span class="components-overview-placeholder" aria-hidden="true"></span>
+                    <span class="components-overview-placeholder components-overview-placeholder-short"
+                        aria-hidden="true"></span>
+                </td>
+                <td class="column-name">
+                    <span class="components-overview-placeholder" aria-hidden="true"></span>
+                </td>
+            </tr>
+            <?php
+        }
+    }
+
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
     protected function handle_row_actions($item, $column_name, $primary)
     {
@@ -163,15 +214,20 @@ final class ListTableLayouts extends WP_List_Table
     }
 
     // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Required WP_List_Table override.
-    public function prepare_items(): void
+    public function prepare_items(bool $cachedOnly = false): void
     {
-        $perPage = $this->get_items_per_page('components_overview_posts_per_page');
+        $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
         $currentPostType = $this->postTypeFilter ?: 'any';
-
-        $flexibleContentLayouts = FlexibleContentLayouts::getInstance();
-
-        // Get all layouts first (without pagination)
-        $allLayouts = $flexibleContentLayouts->getLayouts($currentPostType);
+        $catalog = FlexibleContentLayouts::getInstance();
+        // A cache miss must not start expensive usage queries during the initial page request.
+        $allLayouts = $cachedOnly
+            ? $catalog->getCachedLayoutsFromPostType($currentPostType)
+            : $catalog->getLayouts($currentPostType);
+        $this->loading = $allLayouts === null;
+        if ($this->loading) {
+            return;
+        }
+        $perPage = $this->get_items_per_page('components_overview_posts_per_page');
 
         // Search filtering - do this BEFORE pagination
         $search = strtolower($this->search);
@@ -185,8 +241,6 @@ final class ListTableLayouts extends WP_List_Table
                        str_contains(strtolower($name), $search);
             });
         }
-
-        $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
 
         if ($this->orderby === 'layout') {
             $order = $this->order;
