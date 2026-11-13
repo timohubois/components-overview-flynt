@@ -8,7 +8,6 @@ final class FlexibleContentLayouts
 {
     private array $postTypesWithLayouts = [];
     private array $fieldGroups = [];
-    private array $layouts = [];
     private array $postTypeLayouts = [];
     private ?string $cacheGeneration = null;
     private static ?FlexibleContentLayouts $instance = null;
@@ -99,14 +98,14 @@ final class FlexibleContentLayouts
 
     public function getLayouts(?string $postType = 'any', ?int $perPage = 0, ?int $pageNumber = 0): array
     {
-        $this->layouts = $this->getLayoutsFromPostType($postType ?? 'any');
+        $layouts = $this->getLayoutsFromPostType($postType ?? 'any');
 
         if ($perPage > 0 && $pageNumber > 0) {
             $offset = ($pageNumber - 1) * $perPage;
-            return array_slice($this->layouts, $offset, $perPage);
+            return array_slice($layouts, $offset, $perPage);
         }
 
-        return $this->layouts;
+        return $layouts;
     }
 
     public function getLayoutsCount(?string $postType = 'any'): int
@@ -185,7 +184,6 @@ final class FlexibleContentLayouts
         delete_transient(self::TRANSIENT_BASE_NAME . '.generation');
         $this->cacheGeneration = null;
         $this->postTypeLayouts = [];
-        $this->layouts = [];
 
         // Also remove the legacy, context-free entries.
         $postTypes = $this->getPostTypesWithLayouts();
