@@ -20,6 +20,23 @@
   background: #dcdcde;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  #components-overview-async [data-state="loading"] .components-overview-placeholder {
+    animation: components-overview-placeholder-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes components-overview-placeholder-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
 #components-overview-async .components-overview-filter-placeholder .components-overview-placeholder {
   display: inline-block;
   width: 160px;
