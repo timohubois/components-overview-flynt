@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 2.2.5
+Stable tag: 2.3.0
 Requires PHP: 8.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -93,8 +93,12 @@ The plugin queries your site's WordPress database and stores temporary layout li
 Visit the [GitHub repository](https://github.com/timohubois/components-overview-flynt/) to report issues or contribute. The GitHub README covers the development setup.
 
 == Changelog ==
-= Unreleased =
-* Require WordPress 6.7 or later and PHP 8.3 or later, and load admin JavaScript through the native Script Modules API.
+= 2.3.0 =
+* Load uncached component lists and post-type filters asynchronously while preserving native WordPress navigation.
+* Display cached component lists immediately and keep matching-post tables server-rendered.
+* Improve component labels, loading feedback, mobile table behavior and right-to-left alignment.
+* Restrict component usage queries to field groups that register the component.
+* Require WordPress 6.7 or later and PHP 8.3 or later.
 
 = 2.2.5 =
 * Strengthen admin access and validation of listing parameters and registered layout names.
@@ -158,5 +162,8 @@ Visit the [GitHub repository](https://github.com/timohubois/components-overview-
 * Initial Release
 
 == Upgrade Notice ==
+= 2.3.0 =
+Requires WordPress 6.7 or later and PHP 8.3 or later. Uncached component lists and post-type filters now load asynchronously and need JavaScript and access to the plugin's authenticated REST endpoint.
+
 = 2.2.5 =
 Security and reliability fixes. If a saved listing link is rejected or has expired, reopen the plugin from the WordPress admin menu.
