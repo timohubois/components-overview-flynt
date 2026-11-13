@@ -38,13 +38,26 @@ final class FlexibleContentLayouts
         return $this->postTypesWithLayouts;
     }
 
+    public function getCachedLayoutsFromPostType(string $postType = 'any'): ?array
+    {
+        return $this->loadLayouts($postType, false);
+    }
+
     public function getLayoutsFromPostType(string $postType = 'any'): array
+    {
+        return $this->loadLayouts($postType, true) ?? [];
+    }
+
+    private function loadLayouts(string $postType, bool $rebuild): ?array
     {
         $postsWithLayout = new PostsWithLayout();
         if ($this->cacheGeneration === null) {
             $generationKey = self::TRANSIENT_BASE_NAME . '.generation';
             $generation = get_transient($generationKey);
             if (!is_string($generation) || $generation === '') {
+                if (!$rebuild) {
+                    return null;
+                }
                 $generation = wp_generate_uuid4();
                 set_transient($generationKey, $generation, self::TRANSIENT_EXPIRATION);
             }
@@ -66,6 +79,10 @@ final class FlexibleContentLayouts
         if (is_array($postTypeLayouts)) {
             $this->postTypeLayouts[$transientKey] = $postTypeLayouts;
             return $postTypeLayouts;
+        }
+
+        if (!$rebuild) {
+            return null;
         }
 
         $fieldGroupsLayouts = $this->getFieldGroupLayouts();
