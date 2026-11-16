@@ -63,6 +63,7 @@ final class AdminMenu
             'manage_options',
             self::MENU_SLUG,
             [self::class, 'renderAdminPage'],
+            // WordPress 7.2+ maps this to core-admin/info. Use that name directly once our minimum is 7.2.
             'dashicons-info-outline',
             85
         );
