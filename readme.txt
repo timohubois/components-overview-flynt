@@ -80,7 +80,7 @@ The plugin does not delete components or modify post content.
 
 == Want to contribute? ==
 
-Report issues or contribute on [GitHub](https://github.com/timohubois/components-overview-flynt/). The repository README covers development setup.
+Report issues or contribute on [GitHub](https://github.com/timohubois/components-overview-flynt/).
 
 == Changelog ==
 
