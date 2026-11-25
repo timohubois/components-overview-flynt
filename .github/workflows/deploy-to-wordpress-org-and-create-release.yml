@@ -1,34 +1,71 @@
 name: Deploy and Release Plugin
+
 on:
   push:
-    tags:
-    - "*"
+    tags: ['*']
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  tag:
-    name: New tag
+  checks:
+    name: Release checks
+    uses: ./.github/workflows/commit-checks.yml
+
+  deploy:
+    name: Deploy and create release
+    needs: checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: wordpress-org
+      cancel-in-progress: false
     steps:
-    - name: Install Subversion
-      run: sudo apt-get install subversion
-    - name: Checkout code
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - name: WordPress Plugin Deploy
-      id: deploy
-      uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
-      with:
-        generate-zip: true
-      env:
-        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        SLUG: components-overview-flynt
-    - name: Create GitHub release
-      uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
-      with:
-        files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
-        name: v${{github.ref_name}}
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify release version
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Use a numeric version tag such as 1.0.0 without a v prefix."
+            exit 1
+          fi
+          plugin_version=$(awk '/^[[:space:]]*\* Version:/ {print $NF; exit}' components-overview-flynt.php)
+          stable_tag=$(awk '/^Stable tag:/ {print $NF; exit}' readme.txt)
+          if [[ "$plugin_version" != "$RELEASE_VERSION" || "$stable_tag" != "$RELEASE_VERSION" ]]; then
+            echo "::error::The tag, plugin version and readme stable tag must match."
+            exit 1
+          fi
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
+        with:
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: components-overview-flynt
+      - name: Verify release archive
+        env:
+          RELEASE_ZIP: ${{ steps.deploy.outputs.zip-path }}
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          plugin_version=$(unzip -p "$RELEASE_ZIP" components-overview-flynt/components-overview-flynt.php | awk '/^[[:space:]]*\* Version:/ && !found {print $NF; found=1}')
+          stable_tag=$(unzip -p "$RELEASE_ZIP" components-overview-flynt/readme.txt | awk '/^Stable tag:/ && !found {print $NF; found=1}')
+          if [[ "$plugin_version" != "$RELEASE_VERSION" || "$stable_tag" != "$RELEASE_VERSION" ]]; then
+            echo "::error::The generated ZIP must match the version being released."
+            exit 1
+          fi
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          files: ${{ steps.deploy.outputs.zip-path }}
+          fail_on_unmatched_files: true
+          name: v${{ github.ref_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
