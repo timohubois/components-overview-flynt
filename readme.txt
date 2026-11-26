@@ -3,7 +3,7 @@ Contributors: timohubois
 Tags: flynt, components
 Requires at least: 6.7
 Tested up to: 7.1
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 Requires PHP: 8.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -83,6 +83,9 @@ The plugin does not delete components or modify post content.
 Report issues or contribute on [GitHub](https://github.com/timohubois/components-overview-flynt/).
 
 == Changelog ==
+
+= 2.3.2 =
+* Fix a PHP 8.6 deprecation when registering the component overview REST routes.
 
 = 2.3.1 =
 * Add a subtle pulse to component-list and filter loading placeholders, respecting reduced-motion preferences.

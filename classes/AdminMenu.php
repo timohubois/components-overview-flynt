@@ -86,7 +86,7 @@ final class AdminMenu
             (string) filemtime(Plugin::getPluginRootDir() . 'assets/admin.js')
         );
         add_filter('script_module_data_components-overview-flynt', static fn(array $data): array => [
-            'endpoint' => rest_url(RestApi::NAMESPACE . '/table'),
+            'endpoint' => rest_url(RestApi::REST_NAMESPACE . '/table'),
             'nonce' => wp_create_nonce('wp_rest'),
             'language' => apply_filters('wpml_current_language', null),
             'locale' => determine_locale(),
