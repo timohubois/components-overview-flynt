@@ -49,7 +49,7 @@ $moduleData = ob_get_clean();
 $assert(
     str_contains($moduleData, 'wp-script-module-data-components-overview-flynt')
     && str_contains($moduleData, 'application/json')
-    && $moduleConfig['endpoint'] === rest_url(RestApi::NAMESPACE . '/table')
+    && $moduleConfig['endpoint'] === rest_url(RestApi::REST_NAMESPACE . '/table')
     && wp_verify_nonce($moduleConfig['nonce'], 'wp_rest')
     && $moduleConfig['locale'] === determine_locale()
     && $moduleConfig['language'] === apply_filters('wpml_current_language', null),
@@ -213,7 +213,7 @@ try {
         'The initial shell includes usable search and page actions.'
     );
     $dispatch = static function (array $params, string $part = 'table', ?string $locale = null): WP_REST_Response {
-        $request = new WP_REST_Request('GET', '/' . RestApi::NAMESPACE . '/table');
+        $request = new WP_REST_Request('GET', '/' . RestApi::REST_NAMESPACE . '/table');
         $request->set_param('part', $part);
         if ($locale !== null) {
             $request->set_param('ui_locale', $locale);

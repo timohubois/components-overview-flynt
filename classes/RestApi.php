@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 
 final class RestApi
 {
-    public const NAMESPACE = 'components-overview-flynt/v1';
+    public const REST_NAMESPACE = 'components-overview-flynt/v1';
 
     public static function init(): void
     {
@@ -31,10 +31,10 @@ final class RestApi
         $path = isset($_SERVER['REQUEST_URI'])
             ? wp_parse_url(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), PHP_URL_PATH) : '';
         if (
-            $route !== '/' . self::NAMESPACE . '/table'
+            $route !== '/' . self::REST_NAMESPACE . '/table'
             && !str_ends_with(
                 rtrim((string) $path, '/'),
-                '/' . rest_get_url_prefix() . '/' . self::NAMESPACE . '/table'
+                '/' . rest_get_url_prefix() . '/' . self::REST_NAMESPACE . '/table'
             )
         ) {
             return;
@@ -52,7 +52,7 @@ final class RestApi
 
     public static function registerRoutes(): void
     {
-        register_rest_route(self::NAMESPACE, '/table', [
+        register_rest_route(self::REST_NAMESPACE, '/table', [
             'methods' => WP_REST_Server::READABLE,
             'permission_callback' => [self::class, 'checkPermission'],
             'callback' => [self::class, 'renderTable'],
