@@ -104,7 +104,7 @@ final class ListTableLayouts extends WP_List_Table
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
                 esc_url(AdminMenu::getViewUrl(['postType' => $postType])),
                 $currentPostType === $postType ? ' class="current"' : '',
-                $postTypeObject->labels->name ?? $postType,
+                esc_html($postTypeObject->labels->name ?? $postType),
                 $count
             );
         }

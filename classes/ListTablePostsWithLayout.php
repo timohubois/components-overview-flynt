@@ -113,7 +113,7 @@ final class ListTablePostsWithLayout extends WP_List_Table
                 '<a href="%s"%s>%s <span class="count">(%d)</span></a>',
                 esc_url($href),
                 $currentPostType === $postType ? ' class="current"' : '',
-                $postTypeObject->labels->name,
+                esc_html($postTypeObject->labels->name),
                 $count
             );
         }
