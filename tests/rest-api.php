@@ -30,6 +30,57 @@ $administrators = get_users(['role' => 'administrator', 'number' => 1]);
 $assert($administrators !== [], 'An administrator is available.');
 wp_set_current_user($administrators[0]->ID);
 
+AdminMenu::init();
+$screenOptionCallback = [AdminMenu::class, 'setScreenOption'];
+$screenOptionName = 'components_overview_posts_per_page';
+$screenOptionHook = 'set_screen_option_' . $screenOptionName;
+$assert(
+    !has_filter('set-screen-option', $screenOptionCallback)
+    && has_filter($screenOptionHook, $screenOptionCallback),
+    'Screen-option handling is registered only for the plugin per-page option.'
+);
+$otherScreenOptionCallback = static fn($status, $option, $value): int => 23;
+add_filter('set-screen-option', $otherScreenOptionCallback, 9, 3);
+try {
+    $otherScreenOptionStatus = apply_filters('set-screen-option', false, 'cof_unrelated_items_per_page', 47);
+} finally {
+    remove_filter('set-screen-option', $otherScreenOptionCallback, 9);
+}
+$assert(
+    $otherScreenOptionStatus === 23,
+    'Unrelated custom screen options retain another callback result.'
+);
+foreach ([23, 0] as $expectedPriorStatus) {
+    $priorPluginOptionCallback = static fn($status, $option, $value): int => $expectedPriorStatus;
+    add_filter($screenOptionHook, $priorPluginOptionCallback, 9, 3);
+    try {
+        $priorPluginOptionStatus = apply_filters($screenOptionHook, false, $screenOptionName, '47');
+    } finally {
+        remove_filter($screenOptionHook, $priorPluginOptionCallback, 9);
+    }
+    $assert(
+        $priorPluginOptionStatus === $expectedPriorStatus,
+        'The plugin per-page option preserves a prior callback result.'
+    );
+}
+foreach ([1, 37, 999] as $validScreenOption) {
+    $assert(
+        apply_filters($screenOptionHook, false, $screenOptionName, (string) $validScreenOption)
+            === $validScreenOption,
+        'A valid plugin per-page value is normalized to an integer.'
+    );
+}
+foreach (['0', '-1', '1000', '1e2', '20.5', '', ['37']] as $invalidScreenOption) {
+    $assert(
+        apply_filters($screenOptionHook, false, $screenOptionName, $invalidScreenOption) === false,
+        'An invalid plugin per-page value is rejected.'
+    );
+}
+$assert(
+    AdminMenu::setScreenOption(23, 'cof_unrelated_items_per_page', '47') === 23,
+    'The screen-option callback ignores mismatched option names.'
+);
+
 AdminMenu::enqueueAssets('edit.php');
 $assert(
     !wp_style_is('components-overview-flynt', 'enqueued')
@@ -57,6 +108,8 @@ $assert(
 );
 
 register_post_type('cof_async_empty', ['public' => true, 'label' => 'Empty fixture type']);
+$escapedPostTypeLabel = 'Escaping <em>fixture</em> & "type"';
+register_post_type('cof_async_escaped', ['public' => true, 'label' => $escapedPostTypeLabel]);
 acf_add_local_field_group([
     'key' => 'group_cof_async_test',
     'name' => 'cofAsyncTestComponents',
@@ -76,6 +129,7 @@ acf_add_local_field_group([
     'location' => [
         [['param' => 'post_type', 'operator' => '==', 'value' => 'page']],
         [['param' => 'post_type', 'operator' => '==', 'value' => 'cof_async_empty']],
+        [['param' => 'post_type', 'operator' => '==', 'value' => 'cof_async_escaped']],
     ],
 ]);
 
@@ -83,6 +137,17 @@ $postIds = [];
 $subscriberId = null;
 $catalog = FlexibleContentLayouts::getInstance();
 try {
+    $escapedPostId = wp_insert_post([
+        'post_type' => 'cof_async_escaped',
+        'post_title' => 'Escaped post-type label fixture',
+        'post_status' => 'publish',
+    ], true);
+    if (is_wp_error($escapedPostId)) {
+        throw new RuntimeException($escapedPostId->get_error_message());
+    }
+    $postIds[] = $escapedPostId;
+    update_post_meta($escapedPostId, 'cofAsyncTestComponents', ['cofAsyncTestLayout']);
+
     foreach (['publish', 'draft', 'private'] as $status) {
         $postId = wp_insert_post([
             'post_type' => 'page',
@@ -247,9 +312,15 @@ try {
     $assert($dispatch($view, 'invalid')->get_status() === 400, 'Unknown response parts are rejected.');
     $assert($dispatch($view, 'table', 'not-installed')->get_status() === 400, 'Unknown UI locales are rejected.');
     $counts = $dispatch($view, 'views');
+    $countsHtml = $counts->get_data()['html'] ?? '';
     $assert(
-        $counts->get_status() === 200 && str_contains($counts->get_data()['html'] ?? '', 'class="count"'),
+        $counts->get_status() === 200 && str_contains($countsHtml, 'class="count"'),
         'Filter links and counts are available together.'
+    );
+    $assert(
+        str_contains($countsHtml, esc_html($escapedPostTypeLabel))
+        && !str_contains($countsHtml, $escapedPostTypeLabel),
+        'REST-rendered overview filters escape post-type labels.'
     );
     $assert(
         !str_contains($counts->get_data()['html'], 'postType=cof_async_empty'),
@@ -267,13 +338,24 @@ try {
         'A fully warm overview needs no REST requests or loading UI.'
     );
     $assert(
+        str_contains($warmPage, esc_html($escapedPostTypeLabel))
+        && !str_contains($warmPage, $escapedPostTypeLabel),
+        'Server-rendered overview filters escape post-type labels.'
+    );
+    $assert(
         str_contains($emptyPage, 'No items found.') && !str_contains($emptyPage, 'data-async="table"'),
         'A cached empty list is a cache hit, not a loading state.'
     );
     $counts = $dispatch($view + ['layoutName' => 'cofAsyncTestLayout'], 'views');
+    $countsHtml = $counts->get_data()['html'] ?? '';
     $assert(
-        !str_contains($counts->get_data()['html'], 'postType=cof_async_empty'),
+        !str_contains($countsHtml, 'postType=cof_async_empty'),
         'Detail filters hide post types with zero matching posts.'
+    );
+    $assert(
+        str_contains($countsHtml, esc_html($escapedPostTypeLabel))
+        && !str_contains($countsHtml, $escapedPostTypeLabel),
+        'REST-rendered detail filters escape post-type labels.'
     );
     $counts = $dispatch($view + ['layoutName' => 'cofAsyncTestLayout', 's' => 'no-fixture-matches-this'], 'views');
     $assert(
@@ -393,6 +475,7 @@ try {
     }
     acf_remove_local_field_group('group_cof_async_test');
     unregister_post_type('cof_async_empty');
+    unregister_post_type('cof_async_escaped');
     $catalog->deleteTransients();
     wp_set_current_user($previousUser);
 }

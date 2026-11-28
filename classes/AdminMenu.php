@@ -13,7 +13,12 @@ final class AdminMenu
     public static function init(): void
     {
         add_action('admin_menu', [self::class, 'addAdminMenu']);
-        add_filter('set-screen-option', [self::class, 'setScreenOption'], 10, 3);
+        add_filter(
+            'set_screen_option_components_overview_posts_per_page',
+            [self::class, 'setScreenOption'],
+            10,
+            3
+        );
         add_action('admin_enqueue_scripts', [self::class, 'enqueueAssets']);
     }
 
@@ -119,7 +124,18 @@ final class AdminMenu
 
     public static function setScreenOption($status, $option, $value): mixed
     {
-        return $value;
+        if ($option !== 'components_overview_posts_per_page' || $status !== false) {
+            return $status;
+        }
+        if (
+            !is_int($value)
+            && (!is_string($value) || !preg_match('/^[0-9]+$/D', $value))
+        ) {
+            return false;
+        }
+
+        $value = (int) $value;
+        return $value >= 1 && $value <= 999 ? $value : false;
     }
 
     public static function checkViewNonce(): void
