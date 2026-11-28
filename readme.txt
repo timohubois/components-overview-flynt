@@ -14,7 +14,7 @@ Find the pages and posts that use your Flynt components, with an admin overview,
 
 Components Overview for Flynt shows which pages and posts use each component in your Flynt theme.
 
-Open **Components Overview for Flynt** in the WordPress admin to browse the ACF Flexible Content layouts found in your content. Select a component to see matching posts, then follow an edit or view link to inspect them.
+Open **Components Overview for Flynt** in the WordPress admin, find a component, and choose **View where used**. Follow an edit or view link to inspect a matching post.
 
 **Features**
 
@@ -53,17 +53,13 @@ Custom storage, nested Flexible Content fields, options pages and non-post locat
 
 = Why is a component missing, or why does the overview look out of date? =
 
-Only layouts with matching saved content are listed. Component lists are cached for up to one week and are not automatically refreshed after content edits.
+The overview lists only components with matching saved content. Check the selected post type and, if you use WPML, the admin language. After changing content or fields, click **Refresh components** to refresh the overview for all post types and languages; otherwise it can stay out of date for up to a week.
 
-After changing component usage or field definitions, click **Refresh components** below the overview heading to refresh the lists for all post types and languages.
+Matching posts are queried when you open a component, rather than stored in the component-list cache. If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
 
-Matching posts are queried when you open a component, rather than stored in the component-list cache.
+= What if the list or filters do not load? =
 
-If a layout still does not appear, check its field-group registration, storage conventions and post-type location rules.
-
-= What if the component list does not load? =
-
-Loading requires JavaScript and access to the WordPress REST API. If loading fails, reload the page. If the view has expired, reopen **Components Overview for Flynt** from the admin menu.
+Reload the page and check that JavaScript and the WordPress REST API are available. If the view has expired, reopen **Components Overview for Flynt** from the admin menu.
 
 = Does the overview find every use of a component? =
 
